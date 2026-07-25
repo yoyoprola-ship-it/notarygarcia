@@ -27,7 +27,7 @@ export default function AdminLayout({
       const admin = await isAdmin(u.uid);
       if (!admin) { await signOut(); router.replace('/admin/login'); return; }
       try {
-        const snap = await getDoc(doc(db, 'users', u.uid));
+        const snap = await getDoc(doc(db, 'notarygarcia_users', u.uid));
         const data = snap.data() as
           | { notaryjoseAdmin2faPassedAt?: { toMillis: () => number } }
           | undefined;

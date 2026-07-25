@@ -78,7 +78,7 @@ export async function signOut(): Promise<void> {
 
 export async function isAdmin(uid: string): Promise<boolean> {
   try {
-    const snap = await getDoc(doc(db, 'users', uid));
+    const snap = await getDoc(doc(db, 'notarygarcia_users', uid));
     if (!snap.exists()) return false;
     return snap.data()?.role === 'admin';
   } catch (err) {

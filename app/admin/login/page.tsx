@@ -35,7 +35,7 @@ export default function AdminLoginPage() {
       const admin = await isAdmin(user.uid);
       if (!admin) { setCheckingAuth(false); return; }
       try {
-        const snap = await getDoc(doc(db, 'users', user.uid));
+        const snap = await getDoc(doc(db, 'notarygarcia_users', user.uid));
         const data = snap.data() as
           | { notaryjoseAdmin2faPassedAt?: { toMillis: () => number } }
           | undefined;

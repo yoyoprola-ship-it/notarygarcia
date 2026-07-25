@@ -19,7 +19,7 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
     const unsub = onAuthChange(async (u) => {
       if (!u) { router.replace('/owner/login'); return; }
       try {
-        const snap = await getDoc(doc(db, 'users', u.uid));
+        const snap = await getDoc(doc(db, 'notarygarcia_users', u.uid));
         const sessionAt = snap.data()?.notaryjoseOwnerSessionAt;
         const sessionMs = sessionAt?.toMillis?.() ?? 0;
         if (!sessionMs || Date.now() - sessionMs > OWNER_SESSION_WINDOW_MS) {

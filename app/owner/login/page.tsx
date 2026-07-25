@@ -30,7 +30,7 @@ export default function OwnerLoginPage() {
       if (userInitiated.current) return;
       if (!user) { setCheckingAuth(false); return; }
       try {
-        const snap = await getDoc(doc(db, 'users', user.uid));
+        const snap = await getDoc(doc(db, 'notarygarcia_users', user.uid));
         if (snap.exists()) {
           const sessionAt = snap.data()?.notaryjoseOwnerSessionAt;
           const sessionMs = sessionAt?.toMillis?.() ?? 0;
