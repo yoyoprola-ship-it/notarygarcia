@@ -175,7 +175,7 @@ function TopBar({
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-baseline gap-2">
           <span className="text-lg font-black tracking-tight text-slate-900">
-            Notary Jose
+            Notary Garcia
           </span>
           <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700">
             Lafayette, LA
