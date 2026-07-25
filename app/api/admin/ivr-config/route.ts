@@ -8,7 +8,7 @@ async function verifyAdmin(request: NextRequest) {
   if (!token) return false;
   try {
     const decoded = await adminAuth.verifyIdToken(token, true);
-    const snap = await adminDb.collection('users').doc(decoded.uid).get();
+    const snap = await adminDb.collection('notarygarcia_users').doc(decoded.uid).get();
     return snap.exists && (snap.data() as { role?: string })?.role === 'admin';
   } catch {
     return false;

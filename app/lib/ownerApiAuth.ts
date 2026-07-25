@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from './firebaseAdmin';
+import { getOwnerPhone } from './notaryProfile';
 
 export const OWNER_SESSION_FIELD = 'notaryjoseOwnerSessionAt' as const;
 export const OWNER_SESSION_WINDOW_MS = 8 * 60 * 60 * 1000; // 8 hours
@@ -41,16 +42,18 @@ async function verifyOwnerIdentity(request: NextRequest): Promise<OwnerAuthResul
     };
   }
 
-  // Owner identified by phone number matching OWNER_PHONE env var
-  const ownerPhone = normalizePhone(process.env.OWNER_PHONE || '');
+  // Owner identified by phone number matching the notary's profile in the
+  // central NotaryHost admin DB
+  const ownerPhoneRaw = await getOwnerPhone().catch(() => '');
+  const ownerPhone = normalizePhone(ownerPhoneRaw);
   const userPhone = normalizePhone(tokenPhone);
   if (ownerPhone && userPhone && userPhone === ownerPhone) {
     return { ok: true, uid };
   }
 
-  // Lafayette Market admin is also authorized
+  // Admins recorded directly in this app's own Firestore are also authorized
   try {
-    const snap = await adminDb.collection('users').doc(uid).get();
+    const snap = await adminDb.collection('notarygarcia_users').doc(uid).get();
     if (!snap.exists) {
       return {
         ok: false,
@@ -86,7 +89,7 @@ export async function requireOwner(request: NextRequest): Promise<OwnerAuthResul
   if (!base.ok) return base;
 
   try {
-    const snap = await adminDb.collection('users').doc(base.uid).get();
+    const snap = await adminDb.collection('notarygarcia_users').doc(base.uid).get();
     const data = snap.data() as OwnerUserData | undefined;
     const sessionAt = data?.[OWNER_SESSION_FIELD];
     const sessionMs =

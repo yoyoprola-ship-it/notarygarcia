@@ -4,6 +4,7 @@ import { adminDb } from '@/app/lib/firebaseAdmin';
 import { validateTwilioSignature } from '@/app/lib/validateTwilio';
 import { sendSms } from '@/app/lib/twilioSms';
 import { getIvrConfig } from '@/app/lib/ivrConfig';
+import { getOwnerPhone } from '@/app/lib/notaryProfile';
 
 const BASE = process.env.SITE_URL ?? 'https://notaryjose.lafayettelamarket.com';
 
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
       createdAt: FieldValue.serverTimestamp(),
     }),
     (async () => {
-      const rawOwner = process.env.OWNER_PHONE ?? '';
+      const rawOwner = await getOwnerPhone().catch(() => '');
       const digits = rawOwner.replace(/\D/g, '');
       const ownerE164 = digits.length === 10 ? `+1${digits}` : `+${digits}`;
       await sendSms(

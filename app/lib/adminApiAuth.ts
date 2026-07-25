@@ -37,7 +37,7 @@ async function verifyAndLoad(request: NextRequest): Promise<AuthResult> {
   }
   let data: UserDocData;
   try {
-    const snap = await adminDb.collection('users').doc(uid).get();
+    const snap = await adminDb.collection('notarygarcia_users').doc(uid).get();
     if (!snap.exists) {
       return {
         ok: false,

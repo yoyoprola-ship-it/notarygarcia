@@ -1,6 +1,8 @@
-// Notificaciones al OWNER_PHONE vía Twilio. Fire-and-forget.
+// Notificaciones al owner vía Twilio. Fire-and-forget.
 // notifyOwnerOfBooking  — nueva cita creada
 // notifyOwnerOfCancellation — cita cancelada por el cliente
+
+import { getOwnerPhone } from './notaryProfile';
 
 interface BookingNotifyPayload {
   customerName: string;
@@ -15,11 +17,11 @@ export async function notifyOwnerOfBooking(
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const fromNumber = process.env.TWILIO_PHONE_NUMBER;
-  const rawOwner = process.env.OWNER_PHONE;
+  const rawOwner = await getOwnerPhone().catch(() => '');
 
   if (!accountSid || !authToken || !fromNumber || !rawOwner) {
     console.warn(
-      '[notifyOwner] Missing Twilio/OWNER_PHONE — skipping SMS'
+      '[notifyOwner] Missing Twilio/owner phone — skipping SMS'
     );
     return;
   }
@@ -81,7 +83,7 @@ export async function notifyOwnerOfCancellation(
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const fromNumber = process.env.TWILIO_PHONE_NUMBER;
-  const rawOwner = process.env.OWNER_PHONE;
+  const rawOwner = await getOwnerPhone().catch(() => '');
 
   if (!accountSid || !authToken || !fromNumber || !rawOwner) return;
 

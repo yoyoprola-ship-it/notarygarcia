@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   try {
     // merge: true creates the doc if the owner has no Firestore user record yet
     await adminDb
-      .collection('users')
+      .collection('notarygarcia_users')
       .doc(auth.uid)
       .set({ [OWNER_SESSION_FIELD]: FieldValue.serverTimestamp() }, { merge: true });
     return NextResponse.json({ success: true });

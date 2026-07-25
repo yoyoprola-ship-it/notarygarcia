@@ -53,11 +53,13 @@ env:
     availability:
       - RUNTIME
 
-  # OWNER_PHONE — celular real de Jose Garcia, receptor de las
-  # notificaciones SMS cuando se crea una cita. Nuevo secreto,
-  # específico de este backend.
-  - variable: OWNER_PHONE
-    secret: notarygarcia-owner-phone
+  # ─── Notary record — apunta a este negocio en la colección central
+  # `notaries` de notaryhost-33a33 (gestionada desde notaryhost.com/admin).
+  # businessName/ownerName/ownerPhone/ownerEmail se leen en vivo de ahí
+  # (ver app/lib/notaryProfile.ts) en vez de estar congelados en secrets,
+  # porque pueden cambiar con el tiempo. No es sensible — es solo un doc ID.
+  - variable: NOTARY_ID
+    value: '8dit4YeHfMLTYRZi5Fsw'
     availability:
       - RUNTIME
 

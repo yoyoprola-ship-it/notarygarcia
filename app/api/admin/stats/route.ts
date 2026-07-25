@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const decoded = await adminAuth.verifyIdToken(token, true);
-    const snap = await adminDb.collection('users').doc(decoded.uid).get();
+    const snap = await adminDb.collection('notarygarcia_users').doc(decoded.uid).get();
     if (!snap.exists || (snap.data() as { role?: string })?.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }

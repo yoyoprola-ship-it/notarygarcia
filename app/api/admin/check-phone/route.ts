@@ -26,13 +26,13 @@ export async function POST(request: NextRequest) {
 
   try {
     let snap = await adminDb
-      .collection('users')
+      .collection('notarygarcia_users')
       .where('phone', '==', digits)
       .limit(1)
       .get();
     if (snap.empty) {
       snap = await adminDb
-        .collection('users')
+        .collection('notarygarcia_users')
         .where('phone', '==', `+1${digits}`)
         .limit(1)
         .get();

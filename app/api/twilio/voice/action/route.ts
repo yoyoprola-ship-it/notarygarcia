@@ -4,6 +4,7 @@ import { adminDb } from '@/app/lib/firebaseAdmin';
 import { validateTwilioSignature } from '@/app/lib/validateTwilio';
 import { sendSms } from '@/app/lib/twilioSms';
 import { getIvrConfig } from '@/app/lib/ivrConfig';
+import { getOwnerPhone } from '@/app/lib/notaryProfile';
 
 const BASE = process.env.SITE_URL ?? 'https://notaryjose.lafayettelamarket.com';
 const SITE_URL_TEXT = 'https://notaryjose.lafayettelamarket.com';
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
 
   // Option 3: Direct call to notary
   if (digits === '3') {
-    const ownerPhone = process.env.OWNER_PHONE ?? '';
+    const ownerPhone = await getOwnerPhone().catch(() => '');
     if (!ownerPhone) {
       return twiml(`
 <Response>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/app/lib/firebaseAdmin';
 import { getClientIp, rateLimitOr429 } from '@/app/lib/rateLimit';
+import { getOwnerPhone } from '@/app/lib/notaryProfile';
 
 interface Body { phone?: unknown }
 
@@ -25,22 +26,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid phone' }, { status: 400 });
   }
 
-  // Check against OWNER_PHONE env var first (no Firestore needed)
-  const ownerPhone = (process.env.OWNER_PHONE || '').replace(/\D/g, '').slice(-10);
+  // Check against the notary's phone from the central NotaryHost admin DB
+  const ownerPhoneRaw = await getOwnerPhone().catch(() => '');
+  const ownerPhone = ownerPhoneRaw.replace(/\D/g, '').slice(-10);
   if (ownerPhone && digits === ownerPhone) {
     return NextResponse.json({ canLogin: true });
   }
 
-  // Also allow Lafayette Market admins
+  // Also allow admins recorded directly in this app's own Firestore
   try {
     let snap = await adminDb
-      .collection('users')
+      .collection('notarygarcia_users')
       .where('phone', '==', digits)
       .limit(1)
       .get();
     if (snap.empty) {
       snap = await adminDb
-        .collection('users')
+        .collection('notarygarcia_users')
         .where('phone', '==', `+1${digits}`)
         .limit(1)
         .get();
