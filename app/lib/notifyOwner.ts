@@ -1,8 +1,58 @@
-// Notificaciones al owner vía Twilio. Fire-and-forget.
+// Notificaciones al owner por email (Resend) — antes eran SMS por Twilio,
+// pero cada SMS tiene costo por envío mientras que el email es prácticamente
+// gratis con el plan de Resend ya usado para el 2FA del admin.
 // notifyOwnerOfBooking  — nueva cita creada
 // notifyOwnerOfCancellation — cita cancelada por el cliente
 
-import { getOwnerPhone, getTwilioPhoneNumber } from './notaryProfile';
+import { getOwnerEmail } from './notaryProfile';
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+async function sendOwnerEmail(subject: string, bodyHtml: string): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM || 'notifications@notaryhost.com';
+  const to = await getOwnerEmail().catch(() => '');
+
+  if (!apiKey || !to) {
+    console.warn('[notifyOwner] Missing Resend API key or owner email — skipping notification');
+    return;
+  }
+
+  const html = `
+    <div style="font-family: 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafaf9; color: #0f172a;">
+      <p style="color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 16px;">Notary Garcia</p>
+      ${bodyHtml}
+    </div>
+  `;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({ from, to: [to], subject, html }),
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      console.error('[notifyOwner] Resend error:', { status: res.status, err });
+      return;
+    }
+    console.log('[notifyOwner] email sent to owner');
+  } catch (err) {
+    console.error('[notifyOwner] email send failed:', err);
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 interface BookingNotifyPayload {
   customerName: string;
@@ -11,64 +61,22 @@ interface BookingNotifyPayload {
   notes?: string;             // qué necesita el customer
 }
 
-export async function notifyOwnerOfBooking(
-  b: BookingNotifyPayload
-): Promise<void> {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const fromNumber = await getTwilioPhoneNumber().catch(() => '');
-  const rawOwner = await getOwnerPhone().catch(() => '');
+export async function notifyOwnerOfBooking(b: BookingNotifyPayload): Promise<void> {
+  const phone = formatPhone(b.customerPhone);
+  const when = formatSlot(b.slotIso);
+  const notesLine = b.notes && b.notes.trim().length > 0
+    ? `<p style="margin: 8px 0 0;"><strong>Needs:</strong> ${escapeHtml(b.notes.trim())}</p>`
+    : '';
 
-  if (!accountSid || !authToken || !fromNumber || !rawOwner) {
-    console.warn(
-      '[notifyOwner] Missing Twilio/owner phone — skipping SMS'
-    );
-    return;
-  }
-
-  const digits = rawOwner.replace(/\D/g, '');
-  let toE164: string;
-  if (digits.length === 10) toE164 = `+1${digits}`;
-  else if (digits.length === 11 && digits.startsWith('1'))
-    toE164 = `+${digits}`;
-  else toE164 = `+${digits}`;
-
-  const body = buildBody(b);
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 8000);
-  try {
-    const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
-    const params = new URLSearchParams({
-      To: toE164,
-      From: fromNumber,
-      Body: body,
-    });
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${Buffer.from(
-          `${accountSid}:${authToken}`
-        ).toString('base64')}`,
-      },
-      body: params.toString(),
-      signal: controller.signal,
-    });
-    if (!res.ok) {
-      const r = await res.json().catch(() => ({}));
-      console.error('[notifyOwner] Twilio error:', {
-        code: r?.code,
-        status: res.status,
-      });
-      return;
-    }
-    console.log('[notifyOwner] SMS sent to owner');
-  } catch (err) {
-    console.error('[notifyOwner] SMS send failed:', err);
-  } finally {
-    clearTimeout(timer);
-  }
+  await sendOwnerEmail(
+    `New appointment — ${b.customerName}`,
+    `
+      <h1 style="font-size: 18px; margin: 0 0 12px;">New appointment</h1>
+      <p style="margin: 0;"><strong>${escapeHtml(b.customerName)}</strong> · ${escapeHtml(phone)}</p>
+      <p style="margin: 4px 0 0;">${escapeHtml(when)}</p>
+      ${notesLine}
+    `
+  );
 }
 
 export interface CancellationNotifyPayload {
@@ -77,72 +85,31 @@ export interface CancellationNotifyPayload {
   slotIso: string;
 }
 
-export async function notifyOwnerOfCancellation(
-  b: CancellationNotifyPayload
-): Promise<void> {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const fromNumber = await getTwilioPhoneNumber().catch(() => '');
-  const rawOwner = await getOwnerPhone().catch(() => '');
-
-  if (!accountSid || !authToken || !fromNumber || !rawOwner) return;
-
-  const digits = rawOwner.replace(/\D/g, '');
-  const toE164 =
-    digits.length === 10
-      ? `+1${digits}`
-      : digits.length === 11 && digits.startsWith('1')
-        ? `+${digits}`
-        : `+${digits}`;
-
+export async function notifyOwnerOfCancellation(b: CancellationNotifyPayload): Promise<void> {
   const phone = formatPhone(b.customerPhone);
   const when = formatSlot(b.slotIso);
-  const body = [
-    'NotaryJose: cita cancelada',
-    `${b.customerName} · ${phone}`,
-    when,
-  ].join('\n');
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 8000);
-  try {
-    const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
-    const params = new URLSearchParams({ To: toE164, From: fromNumber, Body: body });
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString('base64')}`,
-      },
-      body: params.toString(),
-      signal: controller.signal,
-    });
-    if (!res.ok) {
-      const r = await res.json().catch(() => ({}));
-      console.error('[notifyOwner] cancellation SMS error:', { code: r?.code, status: res.status });
-    }
-  } catch (err) {
-    console.error('[notifyOwner] cancellation SMS failed:', err);
-  } finally {
-    clearTimeout(timer);
-  }
+  await sendOwnerEmail(
+    `Appointment cancelled — ${b.customerName}`,
+    `
+      <h1 style="font-size: 18px; margin: 0 0 12px; color: #b91c1c;">Appointment cancelled</h1>
+      <p style="margin: 0;"><strong>${escapeHtml(b.customerName)}</strong> · ${escapeHtml(phone)}</p>
+      <p style="margin: 4px 0 0;">${escapeHtml(when)}</p>
+    `
+  );
 }
 
-function buildBody(b: BookingNotifyPayload): string {
-  const phone = formatPhone(b.customerPhone);
-  const when = formatSlot(b.slotIso);
-  // Truncamos notes a 100 chars para no explotar el SMS a muchos
-  // segmentos (Twilio cobra por segmento de 160 chars).
-  const notesLine = b.notes && b.notes.trim().length > 0
-    ? `Needs: ${b.notes.trim().slice(0, 20)}${b.notes.trim().length > 20 ? '…' : ''}`
-    : '';
-  const lines = [
-    'NotaryJose: new appointment',
-    `${b.customerName} · ${phone}`,
-    when,
-  ];
-  if (notesLine) lines.push(notesLine);
-  return lines.join('\n');
+export async function notifyOwnerOfConsultation(callerPhone: string, lang: string): Promise<void> {
+  const phone = formatPhone(callerPhone);
+  await sendOwnerEmail(
+    `New voice consultation — ${phone}`,
+    `
+      <h1 style="font-size: 18px; margin: 0 0 12px;">New voice consultation</h1>
+      <p style="margin: 0;"><strong>${escapeHtml(phone)}</strong></p>
+      <p style="margin: 4px 0 0;">Language: ${escapeHtml(lang.toUpperCase())}</p>
+      <p style="margin: 16px 0 0; color: #64748b; font-size: 13px;">Listen to the recording in the admin dashboard.</p>
+    `
+  );
 }
 
 function formatPhone(p: string): string {

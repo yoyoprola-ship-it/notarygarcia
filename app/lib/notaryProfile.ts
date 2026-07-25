@@ -53,3 +53,8 @@ export async function getTwilioPhoneNumber(): Promise<string> {
   const { twilioPhoneNumber } = await getNotaryProfile();
   return twilioPhoneNumber;
 }
+
+export async function getOwnerEmail(): Promise<string> {
+  const { ownerEmail } = await getNotaryProfile();
+  return ownerEmail;
+}

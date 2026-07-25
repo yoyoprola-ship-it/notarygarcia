@@ -2,9 +2,8 @@ import { NextRequest } from 'next/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/app/lib/firebaseAdmin';
 import { validateTwilioSignature } from '@/app/lib/validateTwilio';
-import { sendSms } from '@/app/lib/twilioSms';
 import { getIvrConfig } from '@/app/lib/ivrConfig';
-import { getOwnerPhone } from '@/app/lib/notaryProfile';
+import { notifyOwnerOfConsultation } from '@/app/lib/notifyOwner';
 
 const BASE = process.env.SITE_URL ?? 'https://notarygarcia.notaryhost.com';
 
@@ -12,12 +11,6 @@ function twiml(xml: string) {
   return new Response(`<?xml version="1.0" encoding="UTF-8"?>${xml}`, {
     headers: { 'Content-Type': 'text/xml' },
   });
-}
-
-function formatPhone(e164: string): string {
-  const d = e164.replace(/\D/g, '').slice(-10);
-  if (d.length !== 10) return e164;
-  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -51,15 +44,7 @@ export async function POST(request: NextRequest) {
       status: 'new',
       createdAt: FieldValue.serverTimestamp(),
     }),
-    (async () => {
-      const rawOwner = await getOwnerPhone().catch(() => '');
-      const digits = rawOwner.replace(/\D/g, '');
-      const ownerE164 = digits.length === 10 ? `+1${digits}` : `+${digits}`;
-      await sendSms(
-        ownerE164,
-        `NotaryJose: nueva consulta de voz\n${formatPhone(callerE164)}\nLang: ${lang.toUpperCase()}`,
-      );
-    })(),
+    notifyOwnerOfConsultation(callerE164, lang),
   ]);
 
   const cfg = await getIvrConfig();
