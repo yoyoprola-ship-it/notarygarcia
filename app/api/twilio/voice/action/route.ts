@@ -6,8 +6,8 @@ import { sendSms } from '@/app/lib/twilioSms';
 import { getIvrConfig } from '@/app/lib/ivrConfig';
 import { getOwnerPhone } from '@/app/lib/notaryProfile';
 
-const BASE = process.env.SITE_URL ?? 'https://notaryjose.lafayettelamarket.com';
-const SITE_URL_TEXT = 'https://notaryjose.lafayettelamarket.com';
+const BASE = process.env.SITE_URL ?? 'https://notarygarcia.notaryhost.com';
+const SITE_URL_TEXT = process.env.SITE_URL ?? 'https://notarygarcia.notaryhost.com';
 
 function twiml(xml: string) {
   return new Response(`<?xml version="1.0" encoding="UTF-8"?>${xml}`, {

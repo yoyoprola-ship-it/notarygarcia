@@ -53,6 +53,15 @@ env:
     availability:
       - RUNTIME
 
+  # Used to build the TwiML callback URLs (Gather/Record/Dial action=)
+  # Twilio calls back into during a voice call, and in the booking-link
+  # SMS text. Without this the code falls back to the old notaryjose
+  # domain — see app/api/twilio/voice/*.
+  - variable: SITE_URL
+    value: 'https://notarygarcia.notaryhost.com'
+    availability:
+      - RUNTIME
+
   # ─── Notary record — apunta a este negocio en la colección central
   # `notaries` de notaryhost-33a33 (gestionada desde notaryhost.com/admin).
   # businessName/ownerName/ownerPhone/ownerEmail se leen en vivo de ahí
