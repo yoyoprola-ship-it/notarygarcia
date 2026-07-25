@@ -11,6 +11,7 @@ export interface NotaryProfile {
   ownerName: string;
   ownerPhone: string;
   ownerEmail: string;
+  twilioPhoneNumber: string;
 }
 
 let cached: NotaryProfile | null = null;
@@ -37,6 +38,7 @@ export async function getNotaryProfile(): Promise<NotaryProfile> {
     ownerName: data.ownerName,
     ownerPhone: data.ownerPhone,
     ownerEmail: data.ownerEmail,
+    twilioPhoneNumber: data.twilioPhoneNumber,
   };
   cachedAt = now;
   return cached;
@@ -45,4 +47,9 @@ export async function getNotaryProfile(): Promise<NotaryProfile> {
 export async function getOwnerPhone(): Promise<string> {
   const { ownerPhone } = await getNotaryProfile();
   return ownerPhone;
+}
+
+export async function getTwilioPhoneNumber(): Promise<string> {
+  const { twilioPhoneNumber } = await getNotaryProfile();
+  return twilioPhoneNumber;
 }

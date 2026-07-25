@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { adminDb } from '@/app/lib/firebaseAdmin';
 import { requireOwner } from '@/app/lib/ownerApiAuth';
+import { getTwilioPhoneNumber } from '@/app/lib/notaryProfile';
 
 function monthBounds(offset: 0 | -1) {
   const now = new Date();
@@ -50,7 +51,7 @@ interface TwilioCallRecord { direction: string; duration: string }
 async function getTwilioStats(startDate: string, endDate: string): Promise<{ calls: number; minutes: number }> {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken  = process.env.TWILIO_AUTH_TOKEN;
-  const rawPhone   = process.env.TWILIO_VOICE_NUMBER ?? process.env.TWILIO_PHONE_NUMBER ?? '';
+  const rawPhone   = await getTwilioPhoneNumber().catch(() => '');
   if (!accountSid || !authToken || !rawPhone) return { calls: 0, minutes: 0 };
 
   const digits = rawPhone.replace(/\D/g, '');
