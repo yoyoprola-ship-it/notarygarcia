@@ -1,0 +1,69 @@
+# Firebase App Hosting config para notarygarcia.
+# Clon técnico de notaryjose, corriendo como backend independiente dentro
+# de notaryhost-33a33 (no lafayette-market-d64ff). Reutiliza los secrets de
+# Twilio/Resend ya creados en este proyecto para el sitio principal de
+# notaryhost.
+
+runConfig:
+  minInstances: 0
+  maxInstances: 3
+  cpu: 1
+  memoryMiB: 512
+  concurrency: 80
+  timeoutSeconds: 60
+
+env:
+  # Firebase web config es hardcoded en lib/firebase.ts (no es sensible,
+  # va en el bundle del cliente de todas formas) — no necesita secrets.
+
+  # ─── Resend (email) — ya existe en notaryhost-33a33 ───────
+  - variable: RESEND_API_KEY
+    secret: resend-api-key
+    availability:
+      - RUNTIME
+
+  - variable: EMAIL_FROM
+    value: 'login@notaryhost.com'
+    availability:
+      - RUNTIME
+
+  # ─── Internal secret — hash del 6-digit email code ────────
+  # Nuevo, específico de este backend.
+  - variable: INTERNAL_API_SECRET
+    secret: notarygarcia-internal-api-secret
+    availability:
+      - RUNTIME
+
+  # ─── Twilio — ya existe en notaryhost-33a33 ────────────────
+  # Mismo número que usa el sitio principal de notaryhost para esta
+  # prueba técnica — un notario real distinto necesitaría su propio
+  # número de Twilio en vez de reusar este mapeo.
+  - variable: TWILIO_ACCOUNT_SID
+    secret: TWILIO_ACCOUNT_SID
+    availability:
+      - RUNTIME
+
+  - variable: TWILIO_AUTH_TOKEN
+    secret: TWILIO_AUTH_TOKEN
+    availability:
+      - RUNTIME
+
+  - variable: TWILIO_PHONE_NUMBER
+    secret: TWILIO_PHONE_NUMBER_HOST
+    availability:
+      - RUNTIME
+
+  # OWNER_PHONE — celular real de Jose Garcia, receptor de las
+  # notificaciones SMS cuando se crea una cita. Nuevo secreto,
+  # específico de este backend.
+  - variable: OWNER_PHONE
+    secret: notarygarcia-owner-phone
+    availability:
+      - RUNTIME
+
+  # ─── Cron secret — autoriza llamadas de Cloud Scheduler ────
+  # Nuevo, específico de este backend.
+  - variable: CRON_SECRET
+    secret: notarygarcia-cron-secret
+    availability:
+      - RUNTIME
