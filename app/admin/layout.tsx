@@ -78,7 +78,7 @@ export default function AdminLayout({
       <header className="bg-white border-b border-stone-200 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <Link href="/admin" className="text-xl font-black tracking-tight">
-            Notary Jose
+            Notary Garcia
             <span className="text-slate-400 text-xs font-medium tracking-normal ml-2 uppercase">admin</span>
           </Link>
           <nav className="flex gap-1">

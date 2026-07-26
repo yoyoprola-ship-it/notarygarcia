@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
   }
 
   const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.EMAIL_FROM || 'Notary Jose <onboarding@resend.dev>';
+  const fromEmail = process.env.EMAIL_FROM || 'Notary Garcia <onboarding@resend.dev>';
   if (!apiKey) {
     return NextResponse.json({ error: 'Email not configured' }, { status: 500 });
   }
@@ -113,11 +113,11 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         from: fromEmail,
         to: [adminEmail],
-        subject: `${safeCode} — Notary Jose admin 2FA`,
+        subject: `${safeCode} — Notary Garcia admin 2FA`,
         html: `
           <div style="font-family: 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafaf9; color: #0f172a;">
             <div style="text-align: center; margin-bottom: 24px;">
-              <h1 style="color: #78350f; font-size: 24px; margin: 0;">Notary Jose</h1>
+              <h1 style="color: #78350f; font-size: 24px; margin: 0;">Notary Garcia</h1>
               <p style="color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; margin: 4px 0 0;">Admin</p>
             </div>
             <p style="color: #0f172a; font-size: 18px; font-weight: 700; margin: 0 0 8px; text-align: center;">Your 2FA code</p>

@@ -303,7 +303,7 @@ function LocationSection({ t }: { t: CopyBlock }) {
         </div>
         <div className="rounded-xl overflow-hidden border border-stone-200 shadow-sm">
           <iframe
-            title="Notary Jose location"
+            title="Notary Garcia location"
             src="https://maps.google.com/maps?q=100+Eva+Dr+Lafayette+LA+70508&output=embed&z=15"
             width="100%"
             height="380"

@@ -223,7 +223,7 @@ export default function AdminLoginPage() {
     <main className="min-h-screen flex items-center justify-center bg-stone-50 text-slate-900 px-6 py-12">
       <div className="w-full max-w-sm">
         <h1 className="text-3xl font-black tracking-tight text-slate-900 mb-1">
-          Notary Jose
+          Notary Garcia
         </h1>
         <div className="w-12 h-1 bg-amber-700 mb-8" />
         <h2 className="text-lg font-bold mb-1 text-slate-600">Admin sign in</h2>

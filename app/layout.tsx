@@ -13,11 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Notary Jose — Bilingual Notary Public in Lafayette, LA',
+  title: 'Notary Garcia — Bilingual Notary Public in Lafayette, LA',
   description:
     'Jose E. Garcia — Notary Public serving Lafayette, LA in English and Spanish. Powers of attorney, USCIS/NVC forms, contracts, taxes, and more.',
   openGraph: {
-    title: 'Notary Jose · Lafayette, LA',
+    title: 'Notary Garcia · Lafayette, LA',
     description:
       'Bilingual notary services — powers of attorney, USCIS forms, contracts, taxes.',
     type: 'website',
