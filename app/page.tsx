@@ -1,5 +1,6 @@
 import HomeClient from './HomeClient';
 import { getNotaryProfile } from './lib/notaryProfile';
+import { trackVisit } from './lib/trackVisit';
 
 // Sin esto Next.js pre-renderiza esta página como estática en build time,
 // congelando los números de teléfono al momento del build en vez de leerlos
@@ -11,6 +12,7 @@ export const dynamic = 'force-dynamic';
 // client component. Son dos números distintos — el IVR es el robot de voz,
 // el directo es el celular real del notario.
 export default async function Page() {
+  void trackVisit();
   const profile = await getNotaryProfile().catch(() => null);
   return (
     <HomeClient

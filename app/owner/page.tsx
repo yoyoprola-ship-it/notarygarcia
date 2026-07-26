@@ -7,10 +7,12 @@ import { ctDateStr, next7DaysCT } from '@/app/lib/timeSlots';
 
 interface MonthStats { label: string; bookings: number; calls: number; consults: number; minutes: number; dueDate: string }
 interface Stats { current: MonthStats; previous: MonthStats }
+interface Visits { today: number; last7: number; last30: number; total: number }
 
 export default function OwnerDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [visits, setVisits] = useState<Visits | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -20,9 +22,10 @@ export default function OwnerDashboard() {
         const idToken = await auth.currentUser?.getIdToken();
         if (!idToken) { setError('Not authenticated'); setLoading(false); return; }
 
-        const [bookingsRes, statsRes] = await Promise.all([
+        const [bookingsRes, statsRes, visitsRes] = await Promise.all([
           fetch('/api/owner/bookings', { headers: { Authorization: `Bearer ${idToken}` } }),
           fetch('/api/owner/stats',    { headers: { Authorization: `Bearer ${idToken}` } }),
+          fetch('/api/owner/visits',   { headers: { Authorization: `Bearer ${idToken}` } }),
         ]);
 
         const bookingsData = await bookingsRes.json().catch(() => ({}));
@@ -36,6 +39,9 @@ export default function OwnerDashboard() {
 
         const statsData = await statsRes.json().catch(() => ({}));
         if (statsRes.ok) setStats(statsData as Stats);
+
+        const visitsData = await visitsRes.json().catch(() => ({}));
+        if (visitsRes.ok) setVisits(visitsData as Visits);
       } catch (err) {
         console.error('[owner-dashboard] failed:', err);
         setError('Failed to load');
@@ -80,6 +86,19 @@ export default function OwnerDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
             <MonthCard m={stats.current} accent />
             <MonthCard m={stats.previous} />
+          </div>
+        </>
+      )}
+
+      {/* Website visits */}
+      {visits && (
+        <>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Website visits</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <StatCard label="Today" value={String(visits.today)} />
+            <StatCard label="Last 7 days" value={String(visits.last7)} accent />
+            <StatCard label="Last 30 days" value={String(visits.last30)} />
+            <StatCard label="Last 90 days" value={String(visits.total)} />
           </div>
         </>
       )}
