@@ -1,7 +1,7 @@
 'use client';
 // Firebase Phone Auth helpers — mismo patrón que rudewear/toolhome.
 // Usado por (a) el BookingModal público (customer verifica phone antes
-// de confirmar cita) y (b) el /admin/login (staff auth).
+// de confirmar cita) y (b) el /owner/login (notary auth).
 
 import {
   RecaptchaVerifier,
@@ -11,8 +11,7 @@ import {
   type ConfirmationResult,
   type User,
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from './firebase';
+import { auth } from './firebase';
 
 declare global {
   interface Window {
@@ -74,17 +73,6 @@ export async function confirmSmsCode(code: string): Promise<User> {
 
 export async function signOut(): Promise<void> {
   await fbSignOut(auth);
-}
-
-export async function isAdmin(uid: string): Promise<boolean> {
-  try {
-    const snap = await getDoc(doc(db, 'notarygarcia_users', uid));
-    if (!snap.exists()) return false;
-    return snap.data()?.role === 'admin';
-  } catch (err) {
-    console.error('[isAdmin] check failed:', err);
-    return false;
-  }
 }
 
 export function onAuthChange(cb: (user: User | null) => void): () => void {

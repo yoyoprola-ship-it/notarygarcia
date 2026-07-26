@@ -27,13 +27,6 @@ env:
     availability:
       - RUNTIME
 
-  # ─── Internal secret — hash del 6-digit email code ────────
-  # Nuevo, específico de este backend.
-  - variable: INTERNAL_API_SECRET
-    secret: notarygarcia-internal-api-secret
-    availability:
-      - RUNTIME
-
   # ─── Twilio — cuenta compartida en notaryhost-33a33, número propio ──
   # ACCOUNT_SID/AUTH_TOKEN son de la cuenta de Twilio compartida (una
   # cuenta, muchos números). El número de teléfono en sí YA NO es un
