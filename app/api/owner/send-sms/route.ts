@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireOwner } from '@/app/lib/ownerApiAuth';
 import { sendSms } from '@/app/lib/twilioSms';
 import { getClientIp, rateLimitOr429 } from '@/app/lib/rateLimit';
+import { getNotaryProfile } from '@/app/lib/notaryProfile';
 
 export async function POST(request: NextRequest) {
   const auth = await requireOwner(request);
@@ -20,6 +21,9 @@ export async function POST(request: NextRequest) {
   const message = (body.message ?? '').trim();
   if (!message || message.length > 1600) return NextResponse.json({ error: 'Invalid message' }, { status: 400 });
 
-  await sendSms(`+1${digits}`, message);
+  const profile = await getNotaryProfile().catch(() => null);
+  const header = `Reply from notary ${profile?.ownerName || profile?.businessName || ''}:`.replace(/ :$/, ':');
+
+  await sendSms(`+1${digits}`, `${header} ${message}`);
   return NextResponse.json({ ok: true });
 }

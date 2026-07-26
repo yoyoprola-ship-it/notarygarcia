@@ -80,7 +80,7 @@ export default function OwnerConsultationsPage() {
       ) : (
         <div className="flex flex-col gap-4">
           {consultations.map((c) => (
-            <ConsultationCard key={c.id} c={c} onMarkedReviewed={load} />
+            <ConsultationCard key={c.id} c={c} onChange={load} />
           ))}
         </div>
       )}
@@ -90,10 +90,10 @@ export default function OwnerConsultationsPage() {
 
 function ConsultationCard({
   c,
-  onMarkedReviewed,
+  onChange,
 }: {
   c: Consultation;
-  onMarkedReviewed: () => void;
+  onChange: () => void;
 }) {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [audioLoading, setAudioLoading] = useState(false);
@@ -105,6 +105,7 @@ function ConsultationCard({
   const [replyError, setReplyError] = useState('');
 
   const [marking, setMarking] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadAudio = async () => {
     if (audioUrl || audioLoading) return;
@@ -160,9 +161,27 @@ function ConsultationCard({
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ id: c.id, status: 'reviewed' }),
       });
-      onMarkedReviewed();
+      onChange();
     } finally {
       setMarking(false);
+    }
+  };
+
+  const deleteConsultation = async () => {
+    if (deleting) return;
+    if (!window.confirm('Delete this voice consultation? This cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) return;
+      await fetch('/api/owner/consultations', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ id: c.id }),
+      });
+      onChange();
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -205,6 +224,13 @@ function ConsultationCard({
               {marking ? '…' : 'Mark reviewed'}
             </button>
           )}
+          <button
+            onClick={deleteConsultation}
+            disabled={deleting}
+            className="px-3 py-1.5 text-xs font-bold uppercase tracking-wide border border-red-300 text-red-700 hover:bg-red-50 rounded disabled:opacity-50"
+          >
+            {deleting ? '…' : 'Delete'}
+          </button>
         </div>
       </div>
 

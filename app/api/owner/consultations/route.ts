@@ -33,6 +33,24 @@ export async function GET(request: NextRequest) {
   }
 }
 
+export async function DELETE(request: NextRequest) {
+  const auth = await requireOwner(request);
+  if (!auth.ok) return auth.response;
+
+  let body: { id?: string };
+  try { body = await request.json(); } catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }); }
+
+  if (!body.id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+
+  try {
+    await adminDb.collection('notarygarcia_consultations').doc(body.id).delete();
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error('[owner/consultations DELETE] failed:', err);
+    return NextResponse.json({ error: 'Delete failed' }, { status: 500 });
+  }
+}
+
 export async function PATCH(request: NextRequest) {
   const auth = await requireOwner(request);
   if (!auth.ok) return auth.response;
