@@ -6,6 +6,16 @@
 
 import { getOwnerEmail } from './notaryProfile';
 
+const BASE = process.env.SITE_URL ?? 'https://notarygarcia.notaryhost.com';
+
+function ctaButton(href: string, label: string): string {
+  return `
+    <p style="margin: 20px 0 0;">
+      <a href="${href}" style="display: inline-block; padding: 10px 20px; background: #78350f; color: #fff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 700;">${label}</a>
+    </p>
+  `;
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, '&amp;')
@@ -75,6 +85,7 @@ export async function notifyOwnerOfBooking(b: BookingNotifyPayload): Promise<voi
       <p style="margin: 0;"><strong>${escapeHtml(b.customerName)}</strong> · ${escapeHtml(phone)}</p>
       <p style="margin: 4px 0 0;">${escapeHtml(when)}</p>
       ${notesLine}
+      ${ctaButton(`${BASE}/owner/bookings`, 'View appointments')}
     `
   );
 }
@@ -95,6 +106,7 @@ export async function notifyOwnerOfCancellation(b: CancellationNotifyPayload): P
       <h1 style="font-size: 18px; margin: 0 0 12px; color: #b91c1c;">Appointment cancelled</h1>
       <p style="margin: 0;"><strong>${escapeHtml(b.customerName)}</strong> · ${escapeHtml(phone)}</p>
       <p style="margin: 4px 0 0;">${escapeHtml(when)}</p>
+      ${ctaButton(`${BASE}/owner/bookings`, 'View appointments')}
     `
   );
 }
@@ -107,7 +119,7 @@ export async function notifyOwnerOfConsultation(callerPhone: string, lang: strin
       <h1 style="font-size: 18px; margin: 0 0 12px;">New voice consultation</h1>
       <p style="margin: 0;"><strong>${escapeHtml(phone)}</strong></p>
       <p style="margin: 4px 0 0;">Language: ${escapeHtml(lang.toUpperCase())}</p>
-      <p style="margin: 16px 0 0; color: #64748b; font-size: 13px;">Listen to the recording in the admin dashboard.</p>
+      ${ctaButton(`${BASE}/owner/consultations`, 'Listen to consultation')}
     `
   );
 }
