@@ -128,7 +128,7 @@ function MonthCard({ m, accent }: { m: MonthStats; accent?: boolean }) {
 }
 
 function BillingCard({ m, accent }: { m: MonthStats; accent?: boolean }) {
-  const bookingFee = m.bookings * 0.85;
+  const bookingFee = m.bookings * 0.52;
   const minutesFee = m.minutes * 0.59;
   const total = bookingFee + minutesFee;
   const due = new Date(m.dueDate + 'T12:00:00');
@@ -141,7 +141,7 @@ function BillingCard({ m, accent }: { m: MonthStats; accent?: boolean }) {
       </p>
       <div className="space-y-2 mb-4 text-sm">
         <div className="flex justify-between">
-          <span className="text-slate-600">{m.bookings} bookings × $0.85</span>
+          <span className="text-slate-600">{m.bookings} bookings × $0.52</span>
           <span className="font-bold">${bookingFee.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
