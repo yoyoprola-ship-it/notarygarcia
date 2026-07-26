@@ -268,31 +268,33 @@ function Hero({
         <p className="text-lg text-slate-600 max-w-xl mx-auto mb-10">
           {t.hero.subtitle}
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col items-center gap-3">
           <a
             href="#book"
             className="px-8 py-3 bg-amber-800 hover:bg-amber-900 text-white font-bold rounded transition-colors"
           >
             {t.hero.cta}
           </a>
-          <a
-            href={`tel:${ivrPhone}`}
-            className="px-6 py-3 border-2 border-slate-300 hover:border-slate-500 text-slate-800 rounded transition-colors flex flex-col items-center"
-          >
-            <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
-              {t.hero.ctaIvrLabel}
-            </span>
-            <span className="font-bold">{formatPhone(ivrPhone)}</span>
-          </a>
-          <a
-            href={`tel:${directPhone}`}
-            className="px-6 py-3 border-2 border-slate-300 hover:border-slate-500 text-slate-800 rounded transition-colors flex flex-col items-center"
-          >
-            <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
-              {t.hero.ctaDirectLabel}
-            </span>
-            <span className="font-bold">{formatPhone(directPhone)}</span>
-          </a>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href={`tel:${ivrPhone}`}
+              className="px-6 py-3 border-2 border-slate-300 hover:border-slate-500 text-slate-800 rounded transition-colors flex flex-col items-center"
+            >
+              <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                {t.hero.ctaIvrLabel}
+              </span>
+              <span className="font-bold">{formatPhone(ivrPhone)}</span>
+            </a>
+            <a
+              href={`tel:${directPhone}`}
+              className="px-6 py-3 border-2 border-slate-300 hover:border-slate-500 text-slate-800 rounded transition-colors flex flex-col items-center"
+            >
+              <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                {t.hero.ctaDirectLabel}
+              </span>
+              <span className="font-bold">{formatPhone(directPhone)}</span>
+            </a>
+          </div>
         </div>
       </div>
     </section>
