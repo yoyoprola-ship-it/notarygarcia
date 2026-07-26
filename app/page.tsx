@@ -331,12 +331,12 @@ function Footer({ t }: { t: CopyBlock }) {
   return (
     <footer className="border-t border-stone-200 py-6 text-center bg-white">
       <p className="text-xs text-slate-500 mb-1">{t.footer}</p>
-      <p className="text-xs text-slate-500">
-        <a
-          href="https://lafayettelamarket.com"
-          className="text-slate-600 underline decoration-stone-300 hover:decoration-slate-500"
-        >
-          Lafayette Market
+      <p className="text-xs text-slate-500 flex items-center justify-center gap-3">
+        <a href="/privacy" className="text-slate-600 underline decoration-stone-300 hover:decoration-slate-500">
+          Privacy Policy
+        </a>
+        <a href="/terms" className="text-slate-600 underline decoration-stone-300 hover:decoration-slate-500">
+          Terms &amp; Conditions
         </a>
       </p>
     </footer>
