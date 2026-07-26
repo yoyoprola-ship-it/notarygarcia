@@ -1,10 +1,15 @@
-// Notificaciones al owner por email (Resend) — antes eran SMS por Twilio,
-// pero cada SMS tiene costo por envío mientras que el email es prácticamente
-// gratis con el plan de Resend ya usado para el 2FA del admin.
-// notifyOwnerOfBooking  — nueva cita creada
-// notifyOwnerOfCancellation — cita cancelada por el cliente
+// Notificaciones de citas: al owner por email (Resend) — antes eran SMS por
+// Twilio, pero cada SMS tiene costo por envío mientras que el email es
+// prácticamente gratis con el plan de Resend ya usado para el 2FA del admin —
+// y al cliente por SMS (sí tiene costo, pero es la confirmación que espera
+// recibir justo después de reservar).
+// notifyOwnerOfBooking  — nueva cita creada (al owner)
+// notifyOwnerOfCancellation — cita cancelada por el cliente (al owner)
+// notifyCustomerOfBooking — confirmación de la cita (al cliente)
 
-import { getOwnerEmail } from './notaryProfile';
+import { getOwnerEmail, getNotaryProfile } from './notaryProfile';
+import { sendSms } from './twilioSms';
+import { formatDateEs, formatDateShort, formatHour } from './timeSlots';
 
 const BASE = process.env.SITE_URL ?? 'https://notarygarcia.notaryhost.com';
 
@@ -27,7 +32,7 @@ function escapeHtml(s: string): string {
 
 async function sendOwnerEmail(subject: string, bodyHtml: string): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM || 'notifications@notaryhost.com';
+  const from = process.env.EMAIL_FROM || 'no-reply@notaryhost.com';
   const to = await getOwnerEmail().catch(() => '');
 
   if (!apiKey || !to) {
@@ -87,6 +92,27 @@ export async function notifyOwnerOfBooking(b: BookingNotifyPayload): Promise<voi
       ${notesLine}
       ${ctaButton(`${BASE}/owner/bookings`, 'View appointments')}
     `
+  );
+}
+
+export async function notifyCustomerOfBooking(b: {
+  customerPhone: string;   // 10 dígitos
+  slotDate: string;        // "YYYY-MM-DD"
+  slotHour: number;        // 8..19
+}): Promise<void> {
+  const profile = await getNotaryProfile().catch(() => null);
+  const businessName = profile?.businessName || 'your notary';
+  const addressLine = profile?.businessAddress ? `\n${profile.businessAddress}` : '';
+  const when = `${formatDateShort(b.slotDate)} at ${formatHour(b.slotHour)}`;
+  const whenEs = `${formatDateEs(b.slotDate)} a las ${formatHour(b.slotHour)}`;
+
+  const digits = (b.customerPhone || '').replace(/\D/g, '').slice(-10);
+  if (digits.length !== 10) return;
+
+  await sendSms(
+    `+1${digits}`,
+    `Your appointment with ${businessName} is confirmed for ${when}.${addressLine}\n\n` +
+    `Su cita con ${businessName} está confirmada para el ${whenEs}.${addressLine}`,
   );
 }
 

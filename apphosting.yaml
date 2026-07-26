@@ -23,7 +23,7 @@ env:
       - RUNTIME
 
   - variable: EMAIL_FROM
-    value: 'login@notaryhost.com'
+    value: 'no-reply@notaryhost.com'
     availability:
       - RUNTIME
 

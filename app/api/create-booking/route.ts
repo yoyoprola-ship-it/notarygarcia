@@ -14,7 +14,7 @@ import {
   openHoursFor,
   slotIsoToId,
 } from '@/app/lib/timeSlots';
-import { notifyOwnerOfBooking } from '@/app/lib/notifyOwner';
+import { notifyCustomerOfBooking, notifyOwnerOfBooking } from '@/app/lib/notifyOwner';
 
 // POST /api/create-booking
 // Header: Authorization: Bearer <Firebase ID token>
@@ -162,14 +162,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Save failed' }, { status: 500 });
   }
 
-  // Fire-and-forget SMS al owner
+  // Fire-and-forget: email al owner + SMS de confirmación al cliente
   notifyOwnerOfBooking({
     customerName,
     customerPhone: phoneFromToken,
     slotIso,
     notes,
   }).catch((err) => {
-    console.error('[create-booking] notify (unhandled):', err);
+    console.error('[create-booking] notify owner (unhandled):', err);
+  });
+  notifyCustomerOfBooking({
+    customerPhone: phoneFromToken,
+    slotDate,
+    slotHour,
+  }).catch((err) => {
+    console.error('[create-booking] notify customer (unhandled):', err);
   });
 
   return NextResponse.json({ ok: true, id: docId, slot: slotIso });

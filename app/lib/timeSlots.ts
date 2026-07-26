@@ -109,6 +109,17 @@ export function formatDateShort(dateStr: string): string {
   }).format(d);
 }
 
+/** Format dateStr "2026-07-18" → "jueves, 18 de julio" (para IVR/SMS en español). */
+export function formatDateEs(dateStr: string): string {
+  const d = new Date(`${dateStr}T12:00:00`);
+  return new Intl.DateTimeFormat('es-ES', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    timeZone: OPERATION_TZ,
+  }).format(d);
+}
+
 /** ¿La hora slot está en el pasado? Usamos +30min buffer para no
  *  permitir reservar el slot que arranca en 5 minutos. */
 export function isPastSlot(dateStr: string, hour: number): boolean {

@@ -12,6 +12,7 @@ export interface NotaryProfile {
   ownerPhone: string;
   ownerEmail: string;
   twilioPhoneNumber: string;
+  businessAddress: string;
 }
 
 let cached: NotaryProfile | null = null;
@@ -39,6 +40,7 @@ export async function getNotaryProfile(): Promise<NotaryProfile> {
     ownerPhone: data.ownerPhone,
     ownerEmail: data.ownerEmail,
     twilioPhoneNumber: data.twilioPhoneNumber,
+    businessAddress: data.businessAddress || '',
   };
   cachedAt = now;
   return cached;

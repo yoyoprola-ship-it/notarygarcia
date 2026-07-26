@@ -2,8 +2,7 @@ import { NextRequest } from 'next/server';
 import { validateTwilioSignature } from '@/app/lib/validateTwilio';
 import { getIvrConfig } from '@/app/lib/ivrConfig';
 import { adminDb } from '@/app/lib/firebaseAdmin';
-import { formatDateShort, formatHour } from '@/app/lib/timeSlots';
-import { OPERATION_TZ } from '@/app/types';
+import { formatDateEs, formatDateShort, formatHour } from '@/app/lib/timeSlots';
 
 const BASE = process.env.SITE_URL ?? 'https://notarygarcia.notaryhost.com';
 
@@ -11,16 +10,6 @@ function twiml(xml: string) {
   return new Response(`<?xml version="1.0" encoding="UTF-8"?>${xml}`, {
     headers: { 'Content-Type': 'text/xml' },
   });
-}
-
-function formatDateEs(dateStr: string): string {
-  const d = new Date(`${dateStr}T12:00:00`);
-  return new Intl.DateTimeFormat('es-ES', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    timeZone: OPERATION_TZ,
-  }).format(d);
 }
 
 interface UpcomingAppointment {
