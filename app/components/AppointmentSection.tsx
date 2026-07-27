@@ -25,6 +25,7 @@ interface DayEntry {
 }
 
 export interface AppointmentCopy {
+  eyebrow: string;
   title: string;
   subtitle: string;
   pickDay: string;
@@ -38,6 +39,7 @@ export interface AppointmentCopy {
 
 export const APPT_COPY: Record<Lang, AppointmentCopy> = {
   en: {
+    eyebrow: 'Availability',
     title: 'Book an appointment',
     subtitle: 'Pick a day and hour. One hour per slot.',
     pickDay: 'Choose a day',
@@ -79,6 +81,7 @@ export const APPT_COPY: Record<Lang, AppointmentCopy> = {
     },
   },
   es: {
+    eyebrow: 'Disponibilidad',
     title: 'Agendar una cita',
     subtitle: 'Elegí día y hora. Un turno por hora.',
     pickDay: 'Elegí un día',
@@ -210,8 +213,11 @@ export default function AppointmentSection({ lang }: Props) {
     >
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-amber-700 mb-2">—</p>
-          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mb-2">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-800 mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+            {t.eyebrow}
+          </span>
+          <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 mb-2">
             {t.title}
           </h2>
           <p className="text-sm text-slate-600">{t.subtitle}</p>

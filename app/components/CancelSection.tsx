@@ -199,7 +199,7 @@ export default function CancelSection({ lang }: { lang: Lang }) {
         <div className="max-w-2xl mx-auto text-center">
           <button
             onClick={() => setStep('phone')}
-            className="px-6 py-3 border border-stone-300 hover:border-slate-500 rounded text-sm font-bold uppercase tracking-wide text-slate-700 transition-colors"
+            className="px-6 py-3 bg-white border border-stone-300 hover:border-amber-300 hover:shadow-sm rounded-full text-sm font-bold uppercase tracking-wide text-slate-700 transition-all"
           >
             {t.trigger}
           </button>
@@ -213,7 +213,7 @@ export default function CancelSection({ lang }: { lang: Lang }) {
       <div className="max-w-md mx-auto">
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-black tracking-tight text-slate-900 mb-1">
+            <h2 className="font-display text-2xl font-semibold tracking-tight text-slate-900 mb-1">
               {t.title}
             </h2>
             {step !== 'bookings' && (

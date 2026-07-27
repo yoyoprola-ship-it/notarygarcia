@@ -9,11 +9,42 @@ import CancelSection from './components/CancelSection';
 // ivrPhone/directPhone vienen del server component en page.tsx (leídos en
 // vivo del perfil central) — son dos números distintos: el de Twilio/IVR
 // (robot de voz) y el personal/directo del notario.
+//
+// Misma paleta que siempre (amber/stone/slate) — este pase solo sube el
+// nivel de pulido visual: tipografía display (Fraunces, la misma que usa
+// NotaryHost), badges en vez del placeholder "—", profundidad con
+// gradientes/sombras suaves, y una marca de sello que refuerza que esto
+// es un servicio oficial, no una plantilla genérica.
 
 function formatPhone(e164: string): string {
   const d = e164.replace(/\D/g, '').slice(-10);
   if (d.length !== 10) return e164;
   return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+}
+
+function SealMark({ className = 'w-6 h-6' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <circle cx="12" cy="12" r="10" className="fill-amber-800" />
+      <path
+        d="M8 12.4l2.6 2.6L16.4 9"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-800 mb-4">
+      <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+      {children}
+    </span>
+  );
 }
 
 // ─── Copy bilingüe ─────────────────────────────────────────────
@@ -28,10 +59,13 @@ interface CopyBlock {
     ctaIvrLabel: string;
     ctaDirectLabel: string;
   };
+  servicesEyebrow: string;
   servicesTitle: string;
   services: { icon: string; title: string; desc: string }[];
+  locationEyebrow: string;
   locationTitle: string;
   directions: string;
+  footerTagline: string;
   footer: string;
 }
 
@@ -47,6 +81,7 @@ const COPY: { en: CopyBlock; es: CopyBlock } = {
       ctaIvrLabel: 'Check appointment date · voice consultation',
       ctaDirectLabel: 'Direct number',
     },
+    servicesEyebrow: 'What we offer',
     servicesTitle: 'Services',
     services: [
       {
@@ -90,8 +125,10 @@ const COPY: { en: CopyBlock; es: CopyBlock } = {
         desc: 'Scheduling assistance and full document preparation for consular appointments.',
       },
     ],
+    locationEyebrow: 'Visit us',
     locationTitle: 'Location',
     directions: 'Get directions',
+    footerTagline: 'Bilingual notary public',
     footer: 'Notary services in Lafayette, LA · English and Spanish',
   },
   es: {
@@ -105,6 +142,7 @@ const COPY: { en: CopyBlock; es: CopyBlock } = {
       ctaIvrLabel: 'Verificar fecha de cita · consulta de voz',
       ctaDirectLabel: 'Número directo',
     },
+    servicesEyebrow: 'Qué ofrecemos',
     servicesTitle: 'Servicios',
     services: [
       {
@@ -148,8 +186,10 @@ const COPY: { en: CopyBlock; es: CopyBlock } = {
         desc: 'Asistencia con el agendamiento y preparación completa de documentos para citas consulares.',
       },
     ],
+    locationEyebrow: 'Visítanos',
     locationTitle: 'Ubicación',
     directions: 'Cómo llegar',
+    footerTagline: 'Notario público bilingüe',
     footer: 'Servicios notariales en Lafayette, LA · Inglés y español',
   },
 };
@@ -189,44 +229,47 @@ function TopBar({
   t: CopyBlock;
 }) {
   return (
-    <header className="border-b border-stone-200 bg-white/80 backdrop-blur sticky top-0 z-30">
+    <header className="border-b border-stone-200 bg-white/85 backdrop-blur sticky top-0 z-30">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-baseline gap-2">
-          <span className="text-lg font-black tracking-tight text-slate-900">
-            Notary Garcia
-          </span>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700">
-            Lafayette, LA
-          </span>
+        <div className="flex items-center gap-2">
+          <SealMark className="w-7 h-7" />
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-lg font-semibold tracking-tight text-slate-900">
+              Notary Garcia
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700">
+              Lafayette, LA
+            </span>
+          </div>
         </div>
-        <div className="flex items-center gap-1 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3">
           <a
             href="#services"
-            className="hidden sm:inline text-sm text-slate-600 hover:text-slate-900"
+            className="hidden sm:inline text-sm text-slate-600 hover:text-slate-900 px-2"
           >
             {t.nav.services}
           </a>
           <a
-            href="#book"
-            className="hidden sm:inline text-sm font-bold text-amber-800 hover:text-amber-900"
-          >
-            {t.nav.book}
-          </a>
-          <a
             href="#cancel"
-            className="hidden sm:inline text-sm text-slate-600 hover:text-slate-900"
+            className="hidden sm:inline text-sm text-slate-600 hover:text-slate-900 px-2"
           >
             {t.nav.cancel}
           </a>
           <a
             href="#location"
-            className="hidden sm:inline text-sm text-slate-600 hover:text-slate-900"
+            className="hidden sm:inline text-sm text-slate-600 hover:text-slate-900 px-2"
           >
             {t.nav.location}
           </a>
+          <a
+            href="#book"
+            className="text-xs sm:text-sm font-bold text-white bg-amber-800 hover:bg-amber-900 px-4 py-2 rounded-full shadow-sm shadow-amber-800/20 transition-colors"
+          >
+            {t.nav.book}
+          </a>
           <button
             onClick={onToggleLang}
-            className="px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-800 border border-amber-300 hover:bg-amber-50 rounded"
+            className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-amber-800 border border-amber-300 hover:bg-amber-50 rounded-full transition-colors"
             title={lang === 'en' ? 'Cambiar a español' : 'Switch to English'}
           >
             {t.nav.language}
@@ -247,22 +290,36 @@ function Hero({
   directPhone: string;
 }) {
   return (
-    <section className="px-6 pt-16 pb-24 sm:pt-24">
+    <section className="relative px-6 pt-16 pb-24 sm:pt-24 overflow-hidden">
+      {/* Soft gradient depth behind the hero — pure CSS, no extra assets */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background:
+            'radial-gradient(60% 50% at 50% 0%, rgba(180,83,9,0.10), transparent 70%),' +
+            'radial-gradient(40% 35% at 85% 15%, rgba(180,83,9,0.06), transparent 70%)',
+        }}
+      />
+
       <div className="max-w-3xl mx-auto text-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <div className="mx-auto mb-8 w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden ring-4 ring-amber-700/40 ring-offset-4 ring-offset-stone-50 shadow-lg">
-          <img
-            src="/jose.jpg"
-            alt="Jose E. Garcia — Notary Public"
-            className="w-full h-full object-cover"
-            style={{ objectPosition: 'top center' }}
-          />
+        <div className="relative mx-auto mb-8 w-32 h-32 sm:w-40 sm:h-40">
+          <div className="w-full h-full rounded-full overflow-hidden ring-4 ring-amber-700/30 ring-offset-4 ring-offset-stone-50 shadow-xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/jose.jpg"
+              alt="Jose E. Garcia — Notary Public"
+              className="w-full h-full object-cover"
+              style={{ objectPosition: 'top center' }}
+            />
+          </div>
+          <span className="absolute bottom-1 right-1 grid place-items-center w-9 h-9 rounded-full bg-white shadow-md ring-1 ring-stone-200">
+            <SealMark className="w-6 h-6" />
+          </span>
         </div>
 
-        <p className="text-xs font-bold uppercase tracking-[0.25em] text-amber-700 mb-4">
-          {t.hero.eyebrow}
-        </p>
-        <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-slate-900 mb-6 leading-[1.05]">
+        <Eyebrow>{t.hero.eyebrow}</Eyebrow>
+        <h1 className="font-display text-5xl sm:text-6xl font-semibold tracking-tight text-slate-900 mb-6 leading-[1.05]">
           {t.hero.title}
         </h1>
         <p className="text-lg text-slate-600 max-w-xl mx-auto mb-10">
@@ -271,14 +328,14 @@ function Hero({
         <div className="flex flex-col items-center gap-3">
           <a
             href="#book"
-            className="px-8 py-3 bg-amber-800 hover:bg-amber-900 text-white font-bold rounded transition-colors"
+            className="px-8 py-3 bg-amber-800 hover:bg-amber-900 text-white font-bold rounded-full shadow-lg shadow-amber-800/25 hover:-translate-y-0.5 transition-all"
           >
             {t.hero.cta}
           </a>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href={`tel:${ivrPhone}`}
-              className="px-6 py-3 border-2 border-slate-300 hover:border-slate-500 text-slate-800 rounded transition-colors flex flex-col items-center"
+              className="px-6 py-3 bg-white border border-stone-200 hover:border-amber-300 hover:shadow-sm text-slate-800 rounded-xl transition-all flex flex-col items-center"
             >
               <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 {t.hero.ctaIvrLabel}
@@ -287,7 +344,7 @@ function Hero({
             </a>
             <a
               href={`tel:${directPhone}`}
-              className="px-6 py-3 border-2 border-slate-300 hover:border-slate-500 text-slate-800 rounded transition-colors flex flex-col items-center"
+              className="px-6 py-3 bg-white border border-stone-200 hover:border-amber-300 hover:shadow-sm text-slate-800 rounded-xl transition-all flex flex-col items-center"
             >
               <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 {t.hero.ctaDirectLabel}
@@ -303,23 +360,23 @@ function Hero({
 
 function ServicesGrid({ t }: { t: CopyBlock }) {
   return (
-    <section id="services" className="px-6 py-16 bg-white border-y border-stone-200">
+    <section id="services" className="px-6 py-16 sm:py-20 bg-white border-y border-stone-200">
       <div className="max-w-6xl mx-auto">
         <div className="mb-10">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-amber-700 mb-2">
-            —
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
+          <Eyebrow>{t.servicesEyebrow}</Eyebrow>
+          <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900">
             {t.servicesTitle}
           </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {t.services.map((s) => (
             <div
               key={s.title}
-              className="border border-stone-200 rounded-lg p-5 hover:border-amber-300 hover:shadow-sm transition-all"
+              className="bg-white border border-stone-200 rounded-2xl p-5 hover:border-amber-300 hover:shadow-lg hover:-translate-y-0.5 transition-all"
             >
-              <div className="text-3xl mb-3">{s.icon}</div>
+              <div className="w-11 h-11 grid place-items-center rounded-xl bg-amber-50 border border-amber-100 text-xl mb-4">
+                {s.icon}
+              </div>
               <p className="text-sm font-bold text-slate-900 mb-2">{s.title}</p>
               <p className="text-xs text-slate-600 leading-relaxed">
                 {s.desc}
@@ -334,14 +391,14 @@ function ServicesGrid({ t }: { t: CopyBlock }) {
 
 function LocationSection({ t }: { t: CopyBlock }) {
   return (
-    <section id="location" className="px-6 py-16 bg-white border-t border-stone-200">
+    <section id="location" className="px-6 py-16 sm:py-20 bg-white border-t border-stone-200">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-amber-700 mb-2">—</p>
-          <h2 className="text-3xl font-black tracking-tight text-slate-900">{t.locationTitle}</h2>
+          <Eyebrow>{t.locationEyebrow}</Eyebrow>
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-slate-900">{t.locationTitle}</h2>
           <p className="text-slate-600 mt-2">100 Eva Dr, Lafayette, LA 70508</p>
         </div>
-        <div className="rounded-xl overflow-hidden border border-stone-200 shadow-sm">
+        <div className="rounded-2xl overflow-hidden border border-stone-200 shadow-md">
           <iframe
             title="Notary Garcia location"
             src="https://maps.google.com/maps?q=100+Eva+Dr+Lafayette+LA+70508&output=embed&z=15"
@@ -352,12 +409,12 @@ function LocationSection({ t }: { t: CopyBlock }) {
             referrerPolicy="no-referrer-when-downgrade"
           />
         </div>
-        <div className="mt-4">
+        <div className="mt-5">
           <a
             href="https://www.google.com/maps/dir/?api=1&destination=100+Eva+Dr+Lafayette+LA+70508"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-bold text-amber-800 hover:text-amber-900"
+            className="inline-flex items-center gap-2 text-sm font-bold text-amber-800 hover:text-amber-900 border border-amber-200 hover:bg-amber-50 rounded-full px-4 py-2 transition-colors"
           >
             {t.directions} →
           </a>
@@ -369,16 +426,25 @@ function LocationSection({ t }: { t: CopyBlock }) {
 
 function Footer({ t }: { t: CopyBlock }) {
   return (
-    <footer className="border-t border-stone-200 py-6 text-center bg-white">
-      <p className="text-xs text-slate-500 mb-1">{t.footer}</p>
-      <p className="text-xs text-slate-500 flex items-center justify-center gap-3">
-        <a href="/privacy" className="text-slate-600 underline decoration-stone-300 hover:decoration-slate-500">
-          Privacy Policy
-        </a>
-        <a href="/terms" className="text-slate-600 underline decoration-stone-300 hover:decoration-slate-500">
-          Terms &amp; Conditions
-        </a>
-      </p>
+    <footer className="border-t border-stone-200 bg-white">
+      <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <SealMark className="w-5 h-5" />
+          <div>
+            <p className="text-sm font-semibold text-slate-900 font-display">Notary Garcia</p>
+            <p className="text-xs text-slate-500">{t.footerTagline}</p>
+          </div>
+        </div>
+        <p className="text-xs text-slate-500 text-center">{t.footer}</p>
+        <div className="flex items-center gap-4 text-xs text-slate-500">
+          <a href="/privacy" className="hover:text-slate-800 underline decoration-stone-300 hover:decoration-slate-500">
+            Privacy Policy
+          </a>
+          <a href="/terms" className="hover:text-slate-800 underline decoration-stone-300 hover:decoration-slate-500">
+            Terms &amp; Conditions
+          </a>
+        </div>
+      </div>
     </footer>
   );
 }
