@@ -21,16 +21,6 @@ const fraunces = Fraunces({
   weight: ['500', '600', '700'],
 });
 
-// Italic variant for small "signature"-style flourish words — an elegant
-// accent (like the cursive taglines on luxury notary branding) without
-// the legibility risk of a full script font.
-const frauncesItalic = Fraunces({
-  variable: '--font-fraunces-italic',
-  subsets: ['latin'],
-  weight: ['500', '600'],
-  style: ['italic'],
-});
-
 export const metadata: Metadata = {
   title: 'Notary Garcia — Bilingual Notary Public in Lafayette, LA',
   description:
@@ -51,9 +41,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${frauncesItalic.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-navy text-cream">
+      <body className="min-h-full flex flex-col bg-stone-50 text-slate-900">
         {children}
       </body>
     </html>

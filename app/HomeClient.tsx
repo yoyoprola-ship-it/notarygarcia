@@ -10,10 +10,11 @@ import CancelSection from './components/CancelSection';
 // vivo del perfil central) — son dos números distintos: el de Twilio/IVR
 // (robot de voz) y el personal/directo del notario.
 //
-// Paleta navy + gold ("firma/sello"), a pedido explícito: look de marca
-// notarial establecida y premium, no de plantilla genérica. Se agregan
-// también dos secciones nuevas (cómo funciona + fila de confianza) que
-// no existían antes, para darle más contenido real al sitio.
+// Misma paleta que siempre (amber/stone/slate) — este pase solo sube el
+// nivel de pulido visual: tipografía display (Fraunces, la misma que usa
+// NotaryHost), badges en vez del placeholder "—", profundidad con
+// gradientes/sombras suaves, y una marca de sello que refuerza que esto
+// es un servicio oficial, no una plantilla genérica.
 
 function formatPhone(e164: string): string {
   const d = e164.replace(/\D/g, '').slice(-10);
@@ -24,12 +25,11 @@ function formatPhone(e164: string): string {
 function SealMark({ className = 'w-6 h-6' }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.2" />
-      <circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" strokeWidth="0.6" />
+      <circle cx="12" cy="12" r="10" className="fill-amber-800" />
       <path
         d="M8 12.4l2.6 2.6L16.4 9"
-        stroke="currentColor"
-        strokeWidth="1.6"
+        stroke="white"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
@@ -40,8 +40,8 @@ function SealMark({ className = 'w-6 h-6' }: { className?: string }) {
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold/40 text-[11px] font-bold uppercase tracking-[0.25em] text-gold mb-5">
-      <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-800 mb-4">
+      <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
       {children}
     </span>
   );
@@ -53,17 +53,12 @@ interface CopyBlock {
   nav: { services: string; book: string; cancel: string; location: string; language: string };
   hero: {
     eyebrow: string;
-    titleLine1: string;
-    titleLine2: string;
+    title: string;
     subtitle: string;
     cta: string;
     ctaIvrLabel: string;
     ctaDirectLabel: string;
   };
-  howEyebrow: string;
-  howTitle: string;
-  howSteps: { title: string; desc: string }[];
-  trust: { title: string; desc: string }[];
   servicesEyebrow: string;
   servicesTitle: string;
   services: { icon: string; title: string; desc: string }[];
@@ -71,7 +66,6 @@ interface CopyBlock {
   locationTitle: string;
   directions: string;
   footerTagline: string;
-  footerAccent: string;
   footer: string;
 }
 
@@ -80,27 +74,13 @@ const COPY: { en: CopyBlock; es: CopyBlock } = {
     nav: { services: 'Services', book: 'Book', cancel: 'Cancel appt', location: 'Location', language: 'ES' },
     hero: {
       eyebrow: 'Bilingual notary public — Lafayette, Louisiana',
-      titleLine1: 'Jose E.',
-      titleLine2: 'Garcia',
+      title: 'Jose E. Garcia',
       subtitle:
         'Notary public serving Lafayette and surrounding parishes. Powers of attorney, immigration forms, contracts, tax preparation — English and Spanish, in one place.',
       cta: 'Request an appointment',
       ctaIvrLabel: 'Check appointment date · voice consultation',
       ctaDirectLabel: 'Direct number',
     },
-    howEyebrow: 'How it works',
-    howTitle: 'Booking is simple',
-    howSteps: [
-      { title: 'Pick a day & time', desc: 'Choose an open slot from the calendar below — no back-and-forth.' },
-      { title: 'Verify by text', desc: 'A quick SMS code confirms it’s really you booking the slot.' },
-      { title: 'You’re booked', desc: 'Confirmation and a reminder land by text before your appointment.' },
-    ],
-    trust: [
-      { title: 'Bilingual, start to finish', desc: 'Every step — site, texts, phone line — works in English and Spanish.' },
-      { title: 'Text confirmations & reminders', desc: 'You’ll always know your appointment is locked in.' },
-      { title: 'Serving Lafayette & nearby parishes', desc: 'Mobile notary services across the Lafayette area.' },
-      { title: 'A real person, not a call center', desc: 'One notary, one direct line — no scripts.' },
-    ],
     servicesEyebrow: 'What we offer',
     servicesTitle: 'Services',
     services: [
@@ -149,34 +129,19 @@ const COPY: { en: CopyBlock; es: CopyBlock } = {
     locationTitle: 'Location',
     directions: 'Get directions',
     footerTagline: 'Bilingual notary public',
-    footerAccent: 'Se habla español.',
     footer: 'Notary services in Lafayette, LA · English and Spanish',
   },
   es: {
     nav: { services: 'Servicios', book: 'Reservar', cancel: 'Cancelar cita', location: 'Ubicación', language: 'EN' },
     hero: {
       eyebrow: 'Notario público bilingüe — Lafayette, Luisiana',
-      titleLine1: 'Jose E.',
-      titleLine2: 'Garcia',
+      title: 'Jose E. Garcia',
       subtitle:
         'Notario público al servicio de Lafayette y las parroquias vecinas. Poderes, formas de inmigración, contratos, impuestos — en inglés y español, en un solo lugar.',
       cta: 'Solicitar una cita',
       ctaIvrLabel: 'Verificar fecha de cita · consulta de voz',
       ctaDirectLabel: 'Número directo',
     },
-    howEyebrow: 'Cómo funciona',
-    howTitle: 'Agendar es simple',
-    howSteps: [
-      { title: 'Elegí día y hora', desc: 'Elegí un turno libre en el calendario de abajo — sin idas y vueltas.' },
-      { title: 'Verificá por SMS', desc: 'Un código rápido por mensaje confirma que sos vos quien reserva.' },
-      { title: 'Listo, tenés tu cita', desc: 'Confirmación y recordatorio te llegan por mensaje antes de tu cita.' },
-    ],
-    trust: [
-      { title: 'Bilingüe, de principio a fin', desc: 'Sitio, mensajes y línea telefónica — todo en inglés y español.' },
-      { title: 'Confirmaciones y recordatorios por SMS', desc: 'Siempre vas a saber que tu cita quedó confirmada.' },
-      { title: 'Lafayette y parroquias cercanas', desc: 'Servicio de notario móvil en toda el área de Lafayette.' },
-      { title: 'Una persona real, no un call center', desc: 'Un solo notario, una línea directa — sin libretos.' },
-    ],
     servicesEyebrow: 'Qué ofrecemos',
     servicesTitle: 'Servicios',
     services: [
@@ -225,7 +190,6 @@ const COPY: { en: CopyBlock; es: CopyBlock } = {
     locationTitle: 'Ubicación',
     directions: 'Cómo llegar',
     footerTagline: 'Notario público bilingüe',
-    footerAccent: 'English also spoken.',
     footer: 'Servicios notariales en Lafayette, LA · Inglés y español',
   },
 };
@@ -246,8 +210,6 @@ export default function HomeClient({
     <main className="min-h-screen flex flex-col">
       <TopBar lang={lang} onToggleLang={() => setLang(lang === 'en' ? 'es' : 'en')} t={t} />
       <Hero t={t} ivrPhone={ivrPhone} directPhone={directPhone} />
-      <HowItWorks t={t} />
-      <TrustRow t={t} />
       <ServicesGrid t={t} />
       <AppointmentSection lang={lang} />
       <CancelSection lang={lang} />
@@ -267,40 +229,47 @@ function TopBar({
   t: CopyBlock;
 }) {
   return (
-    <header className="border-b border-gold/20 bg-navy/90 backdrop-blur sticky top-0 z-30">
+    <header className="border-b border-stone-200 bg-white/85 backdrop-blur sticky top-0 z-30">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <span className="grid place-items-center w-9 h-9 rounded-full border border-gold/50 text-gold">
-            <SealMark className="w-5 h-5" />
-          </span>
+        <div className="flex items-center gap-2">
+          <SealMark className="w-7 h-7" />
           <div className="flex items-baseline gap-2">
-            <span className="font-display text-lg font-semibold tracking-tight text-cream">
+            <span className="font-display text-lg font-semibold tracking-tight text-slate-900">
               Notary Garcia
             </span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gold">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700">
               Lafayette, LA
             </span>
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
-          <a href="#services" className="hidden sm:inline text-sm text-cream/70 hover:text-cream px-2">
+          <a
+            href="#services"
+            className="hidden sm:inline text-sm text-slate-600 hover:text-slate-900 px-2"
+          >
             {t.nav.services}
           </a>
-          <a href="#cancel" className="hidden sm:inline text-sm text-cream/70 hover:text-cream px-2">
+          <a
+            href="#cancel"
+            className="hidden sm:inline text-sm text-slate-600 hover:text-slate-900 px-2"
+          >
             {t.nav.cancel}
           </a>
-          <a href="#location" className="hidden sm:inline text-sm text-cream/70 hover:text-cream px-2">
+          <a
+            href="#location"
+            className="hidden sm:inline text-sm text-slate-600 hover:text-slate-900 px-2"
+          >
             {t.nav.location}
           </a>
           <a
             href="#book"
-            className="text-xs sm:text-sm font-bold text-navy-deep bg-gold hover:bg-gold-light px-4 py-2 rounded-full shadow-sm shadow-black/20 transition-colors"
+            className="text-xs sm:text-sm font-bold text-white bg-amber-800 hover:bg-amber-900 px-4 py-2 rounded-full shadow-sm shadow-amber-800/20 transition-colors"
           >
             {t.nav.book}
           </a>
           <button
             onClick={onToggleLang}
-            className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-gold border border-gold/40 hover:bg-gold-soft rounded-full transition-colors"
+            className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-amber-800 border border-amber-300 hover:bg-amber-50 rounded-full transition-colors"
             title={lang === 'en' ? 'Cambiar a español' : 'Switch to English'}
           >
             {t.nav.language}
@@ -322,25 +291,20 @@ function Hero({
 }) {
   return (
     <section className="relative px-6 pt-16 pb-24 sm:pt-24 overflow-hidden">
-      {/* Soft gold glow behind the hero — pure CSS, no extra assets */}
+      {/* Soft gradient depth behind the hero — pure CSS, no extra assets */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(55% 45% at 50% 0%, rgba(201,162,39,0.16), transparent 70%),' +
-            'radial-gradient(40% 35% at 85% 10%, rgba(201,162,39,0.08), transparent 70%)',
+            'radial-gradient(60% 50% at 50% 0%, rgba(180,83,9,0.10), transparent 70%),' +
+            'radial-gradient(40% 35% at 85% 15%, rgba(180,83,9,0.06), transparent 70%)',
         }}
       />
 
       <div className="max-w-3xl mx-auto text-center">
-        <div className="relative mx-auto mb-8 w-36 h-36 sm:w-44 sm:h-44">
-          <div
-            className="absolute -inset-2 rounded-full opacity-70"
-            style={{ background: 'conic-gradient(from 0deg, var(--gold), transparent 30%, var(--gold) 60%, transparent 90%, var(--gold))' }}
-            aria-hidden="true"
-          />
-          <div className="relative w-full h-full rounded-full overflow-hidden ring-4 ring-navy shadow-xl">
+        <div className="relative mx-auto mb-8 w-32 h-32 sm:w-40 sm:h-40">
+          <div className="w-full h-full rounded-full overflow-hidden ring-4 ring-amber-700/30 ring-offset-4 ring-offset-stone-50 shadow-xl">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/jose.jpg"
@@ -349,44 +313,43 @@ function Hero({
               style={{ objectPosition: 'top center' }}
             />
           </div>
-          <span className="absolute bottom-1 right-1 grid place-items-center w-10 h-10 rounded-full bg-navy shadow-md ring-1 ring-gold/50 text-gold">
+          <span className="absolute bottom-1 right-1 grid place-items-center w-9 h-9 rounded-full bg-white shadow-md ring-1 ring-stone-200">
             <SealMark className="w-6 h-6" />
           </span>
         </div>
 
         <Eyebrow>{t.hero.eyebrow}</Eyebrow>
-        <h1 className="font-display text-5xl sm:text-6xl font-semibold tracking-tight mb-6 leading-[1.05]">
-          <span className="text-cream">{t.hero.titleLine1} </span>
-          <span className="text-gold">{t.hero.titleLine2}</span>
+        <h1 className="font-display text-5xl sm:text-6xl font-semibold tracking-tight text-slate-900 mb-6 leading-[1.05]">
+          {t.hero.title}
         </h1>
-        <p className="text-lg text-cream/70 max-w-xl mx-auto mb-10">
+        <p className="text-lg text-slate-600 max-w-xl mx-auto mb-10">
           {t.hero.subtitle}
         </p>
         <div className="flex flex-col items-center gap-3">
           <a
             href="#book"
-            className="px-8 py-3 bg-gold hover:bg-gold-light text-navy-deep font-bold rounded-full shadow-lg shadow-black/25 hover:-translate-y-0.5 transition-all"
+            className="px-8 py-3 bg-amber-800 hover:bg-amber-900 text-white font-bold rounded-full shadow-lg shadow-amber-800/25 hover:-translate-y-0.5 transition-all"
           >
             {t.hero.cta}
           </a>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href={`tel:${ivrPhone}`}
-              className="px-6 py-3 bg-navy-light border border-gold/25 hover:border-gold/50 text-cream rounded-xl transition-all flex flex-col items-center"
+              className="px-6 py-3 bg-white border border-stone-200 hover:border-amber-300 hover:shadow-sm text-slate-800 rounded-xl transition-all flex flex-col items-center"
             >
-              <span className="text-[11px] font-bold uppercase tracking-wide text-cream/50">
+              <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 {t.hero.ctaIvrLabel}
               </span>
-              <span className="font-bold text-gold">{formatPhone(ivrPhone)}</span>
+              <span className="font-bold">{formatPhone(ivrPhone)}</span>
             </a>
             <a
               href={`tel:${directPhone}`}
-              className="px-6 py-3 bg-navy-light border border-gold/25 hover:border-gold/50 text-cream rounded-xl transition-all flex flex-col items-center"
+              className="px-6 py-3 bg-white border border-stone-200 hover:border-amber-300 hover:shadow-sm text-slate-800 rounded-xl transition-all flex flex-col items-center"
             >
-              <span className="text-[11px] font-bold uppercase tracking-wide text-cream/50">
+              <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 {t.hero.ctaDirectLabel}
               </span>
-              <span className="font-bold text-gold">{formatPhone(directPhone)}</span>
+              <span className="font-bold">{formatPhone(directPhone)}</span>
             </a>
           </div>
         </div>
@@ -395,59 +358,13 @@ function Hero({
   );
 }
 
-function HowItWorks({ t }: { t: CopyBlock }) {
-  return (
-    <section className="px-6 py-16 sm:py-20 bg-navy-deep border-y border-gold/15">
-      <div className="max-w-5xl mx-auto text-center">
-        <Eyebrow>{t.howEyebrow}</Eyebrow>
-        <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-cream mb-10">
-          {t.howTitle}
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {t.howSteps.map((step, i) => (
-            <div key={step.title} className="bg-navy-light border border-gold/20 rounded-2xl p-6 text-left">
-              <span className="inline-grid place-items-center w-9 h-9 rounded-full border border-gold text-gold font-display font-semibold mb-4">
-                {i + 1}
-              </span>
-              <p className="text-sm font-bold text-cream mb-2">{step.title}</p>
-              <p className="text-xs text-cream/60 leading-relaxed">{step.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function TrustRow({ t }: { t: CopyBlock }) {
-  return (
-    <section className="px-6 py-16 sm:py-20 bg-navy">
-      <div className="max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {t.trust.map((item) => (
-            <div key={item.title} className="flex items-start gap-4 bg-navy-light border border-gold/15 rounded-2xl p-5">
-              <span className="grid place-items-center w-10 h-10 rounded-full border border-gold/40 text-gold shrink-0">
-                <SealMark className="w-5 h-5" />
-              </span>
-              <div>
-                <p className="text-sm font-bold text-cream mb-1">{item.title}</p>
-                <p className="text-xs text-cream/60 leading-relaxed">{item.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function ServicesGrid({ t }: { t: CopyBlock }) {
   return (
-    <section id="services" className="px-6 py-16 sm:py-20 bg-navy-deep border-y border-gold/15">
+    <section id="services" className="px-6 py-16 sm:py-20 bg-white border-y border-stone-200">
       <div className="max-w-6xl mx-auto">
         <div className="mb-10">
           <Eyebrow>{t.servicesEyebrow}</Eyebrow>
-          <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-cream">
+          <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900">
             {t.servicesTitle}
           </h2>
         </div>
@@ -455,13 +372,13 @@ function ServicesGrid({ t }: { t: CopyBlock }) {
           {t.services.map((s) => (
             <div
               key={s.title}
-              className="bg-navy-light border border-gold/20 rounded-2xl p-5 hover:border-gold/50 hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5 transition-all"
+              className="bg-white border border-stone-200 rounded-2xl p-5 hover:border-amber-300 hover:shadow-lg hover:-translate-y-0.5 transition-all"
             >
-              <div className="w-11 h-11 grid place-items-center rounded-full bg-gold-soft border border-gold/30 text-xl mb-4">
+              <div className="w-11 h-11 grid place-items-center rounded-xl bg-amber-50 border border-amber-100 text-xl mb-4">
                 {s.icon}
               </div>
-              <p className="text-sm font-bold text-cream mb-2">{s.title}</p>
-              <p className="text-xs text-cream/60 leading-relaxed">
+              <p className="text-sm font-bold text-slate-900 mb-2">{s.title}</p>
+              <p className="text-xs text-slate-600 leading-relaxed">
                 {s.desc}
               </p>
             </div>
@@ -474,14 +391,14 @@ function ServicesGrid({ t }: { t: CopyBlock }) {
 
 function LocationSection({ t }: { t: CopyBlock }) {
   return (
-    <section id="location" className="px-6 py-16 sm:py-20 bg-navy-deep border-t border-gold/15">
+    <section id="location" className="px-6 py-16 sm:py-20 bg-white border-t border-stone-200">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <Eyebrow>{t.locationEyebrow}</Eyebrow>
-          <h2 className="font-display text-3xl font-semibold tracking-tight text-cream">{t.locationTitle}</h2>
-          <p className="text-cream/60 mt-2">100 Eva Dr, Lafayette, LA 70508</p>
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-slate-900">{t.locationTitle}</h2>
+          <p className="text-slate-600 mt-2">100 Eva Dr, Lafayette, LA 70508</p>
         </div>
-        <div className="rounded-2xl overflow-hidden border border-gold/25 shadow-md">
+        <div className="rounded-2xl overflow-hidden border border-stone-200 shadow-md">
           <iframe
             title="Notary Garcia location"
             src="https://maps.google.com/maps?q=100+Eva+Dr+Lafayette+LA+70508&output=embed&z=15"
@@ -497,7 +414,7 @@ function LocationSection({ t }: { t: CopyBlock }) {
             href="https://www.google.com/maps/dir/?api=1&destination=100+Eva+Dr+Lafayette+LA+70508"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-bold text-gold hover:text-gold-light border border-gold/40 hover:bg-gold-soft rounded-full px-4 py-2 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-bold text-amber-800 hover:text-amber-900 border border-amber-200 hover:bg-amber-50 rounded-full px-4 py-2 transition-colors"
           >
             {t.directions} →
           </a>
@@ -509,23 +426,21 @@ function LocationSection({ t }: { t: CopyBlock }) {
 
 function Footer({ t }: { t: CopyBlock }) {
   return (
-    <footer className="border-t border-gold/15 bg-navy">
+    <footer className="border-t border-stone-200 bg-white">
       <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2.5">
-          <span className="grid place-items-center w-8 h-8 rounded-full border border-gold/40 text-gold">
-            <SealMark className="w-4 h-4" />
-          </span>
+        <div className="flex items-center gap-2">
+          <SealMark className="w-5 h-5" />
           <div>
-            <p className="text-sm font-semibold text-cream font-display">Notary Garcia</p>
-            <p className="text-xs text-cream/50">{t.footerTagline}</p>
+            <p className="text-sm font-semibold text-slate-900 font-display">Notary Garcia</p>
+            <p className="text-xs text-slate-500">{t.footerTagline}</p>
           </div>
         </div>
-        <p className="font-accent italic text-gold-light text-base">{t.footerAccent}</p>
-        <div className="flex items-center gap-4 text-xs text-cream/50">
-          <a href="/privacy" className="hover:text-cream underline decoration-gold/20 hover:decoration-gold/50">
+        <p className="text-xs text-slate-500 text-center">{t.footer}</p>
+        <div className="flex items-center gap-4 text-xs text-slate-500">
+          <a href="/privacy" className="hover:text-slate-800 underline decoration-stone-300 hover:decoration-slate-500">
             Privacy Policy
           </a>
-          <a href="/terms" className="hover:text-cream underline decoration-gold/20 hover:decoration-gold/50">
+          <a href="/terms" className="hover:text-slate-800 underline decoration-stone-300 hover:decoration-slate-500">
             Terms &amp; Conditions
           </a>
         </div>

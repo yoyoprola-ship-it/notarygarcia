@@ -125,32 +125,32 @@ export default function OwnerLoginPage() {
 
   if (checkingAuth) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-navy text-cream/50">
+      <main className="min-h-screen flex items-center justify-center bg-stone-50 text-slate-500">
         Loading…
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-navy text-cream px-6 py-12">
+    <main className="min-h-screen flex items-center justify-center bg-stone-50 text-slate-900 px-6 py-12">
       <div className="w-full max-w-sm">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-cream mb-1">
+        <h1 className="text-3xl font-black tracking-tight text-slate-900 mb-1">
           Notary Garcia
         </h1>
-        <div className="w-12 h-1 bg-gold mb-8" />
-        <h2 className="text-lg font-bold mb-1 text-cream/70">Owner sign in</h2>
+        <div className="w-12 h-1 bg-amber-700 mb-8" />
+        <h2 className="text-lg font-bold mb-1 text-slate-600">Owner sign in</h2>
         <div className="flex gap-1.5 mb-5">
           {[0, 1].map((i) => {
             const stepIdx = step === 'phone' ? 0 : 1;
             return (
               <div
                 key={i}
-                className={`h-1 flex-1 rounded ${i <= stepIdx ? 'bg-gold' : 'bg-navy-light'}`}
+                className={`h-1 flex-1 rounded ${i <= stepIdx ? 'bg-amber-700' : 'bg-stone-200'}`}
               />
             );
           })}
         </div>
-        <p className="text-xs text-cream/50 mb-6">
+        <p className="text-xs text-slate-500 mb-6">
           {step === 'phone' && "Step 1 of 2 — We'll text you a verification code."}
           {step === 'code' && `Step 2 of 2 — Enter the 6-digit code sent to ${phone}.`}
         </p>
@@ -158,11 +158,11 @@ export default function OwnerLoginPage() {
         {step === 'phone' && (
           <form onSubmit={handleSendSms} className="flex flex-col gap-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-cream/50 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
                 Phone number
               </label>
               <div className="flex items-center gap-2">
-                <span className="text-cream/50 text-sm">+1</span>
+                <span className="text-slate-500 text-sm">+1</span>
                 <input
                   type="tel" inputMode="tel" autoComplete="tel"
                   placeholder="(337) 123-4567"
@@ -172,7 +172,7 @@ export default function OwnerLoginPage() {
                 />
               </div>
             </div>
-            {error && <p className="text-sm text-red-300">{error}</p>}
+            {error && <p className="text-sm text-red-600">{error}</p>}
             <button type="submit" disabled={loading} className={btnCls}>
               {loading ? 'Sending…' : 'Send code'}
             </button>
@@ -189,7 +189,7 @@ export default function OwnerLoginPage() {
               disabled={loading} required autoFocus
               className={`${inputCls} text-center text-2xl font-black tracking-[0.5em]`}
             />
-            {error && <p className="text-sm text-red-300">{error}</p>}
+            {error && <p className="text-sm text-red-600">{error}</p>}
             <button type="submit" disabled={loading || code.length !== 6} className={btnCls}>
               {loading ? 'Verifying…' : 'Enter owner panel'}
             </button>
@@ -197,7 +197,7 @@ export default function OwnerLoginPage() {
               type="button"
               onClick={() => { setStep('phone'); setCode(''); setError(''); }}
               disabled={loading}
-              className="text-xs text-cream/50 hover:text-cream"
+              className="text-xs text-slate-500 hover:text-slate-800"
             >
               ← Change phone number
             </button>
@@ -211,7 +211,7 @@ export default function OwnerLoginPage() {
 }
 
 const inputCls =
-  'w-full px-4 py-3 bg-navy-light border border-gold/25 rounded-md text-cream placeholder:text-cream/30 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors';
+  'w-full px-4 py-3 bg-white border border-stone-300 rounded-md text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 transition-colors';
 
 const btnCls =
-  'w-full px-4 py-3 bg-gold hover:bg-gold-light active:bg-gold text-navy-deep font-bold uppercase tracking-wide rounded-md transition-colors disabled:opacity-50';
+  'w-full px-4 py-3 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 text-white font-bold uppercase tracking-wide rounded-md transition-colors disabled:opacity-50';

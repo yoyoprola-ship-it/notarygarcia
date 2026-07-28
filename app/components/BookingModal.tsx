@@ -186,26 +186,26 @@ export default function BookingModal({
       onClick={onClose}
     >
       <div
-        className="bg-navy-light border border-gold/25 w-full sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-lg shadow-xl"
+        className="bg-white border border-stone-200 w-full sm:max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-lg shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 bg-navy-light border-b border-gold/20 px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 bg-white border-b border-stone-200 px-6 py-4 flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-gold">
+            <p className="text-xs font-bold uppercase tracking-wider text-amber-700">
               {step === 'details' && t.step1of3}
               {step === 'code' && t.step2of3}
               {step === 'success' && t.done}
             </p>
-            <h2 className="text-lg font-black tracking-tight text-cream">
+            <h2 className="text-lg font-black tracking-tight text-slate-900">
               {t.title}
             </h2>
             {step !== 'success' && (
-              <p className="text-xs text-cream/50 mt-1">{t.bookingWith(slotLabel)}</p>
+              <p className="text-xs text-slate-500 mt-1">{t.bookingWith(slotLabel)}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center text-cream/40 hover:text-cream text-2xl"
+            className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-800 text-2xl"
             aria-label="Close"
           >
             ×
@@ -228,7 +228,7 @@ export default function BookingModal({
                 className={inputCls}
               />
               <div className="flex items-center gap-2">
-                <span className="text-cream/50 text-sm">+1</span>
+                <span className="text-slate-500 text-sm">+1</span>
                 <input
                   type="tel"
                   inputMode="tel"
@@ -242,7 +242,7 @@ export default function BookingModal({
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-cream/50 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
                   {t.notesLabel}
                 </label>
                 <textarea
@@ -255,7 +255,7 @@ export default function BookingModal({
                   className={`${inputCls} resize-none`}
                 />
               </div>
-              {error && <p className="text-sm text-red-300">{error}</p>}
+              {error && <p className="text-sm text-red-600">{error}</p>}
               <button type="submit" disabled={loading} className={btnCls}>
                 {loading ? t.sending : t.sendCode}
               </button>
@@ -277,7 +277,7 @@ export default function BookingModal({
                 autoFocus
                 className={`${inputCls} text-center text-2xl font-black tracking-[0.5em]`}
               />
-              {error && <p className="text-sm text-red-300">{error}</p>}
+              {error && <p className="text-sm text-red-600">{error}</p>}
               <button
                 type="submit"
                 disabled={loading || code.length !== 6}
@@ -289,7 +289,7 @@ export default function BookingModal({
                 type="button"
                 onClick={() => { setStep('details'); setCode(''); setError(''); }}
                 disabled={loading}
-                className="text-xs text-cream/50 hover:text-cream"
+                className="text-xs text-slate-500 hover:text-slate-800"
               >
                 {t.changeNumber}
               </button>
@@ -298,13 +298,13 @@ export default function BookingModal({
 
           {step === 'success' && (
             <div className="text-center py-4">
-              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gold-soft border border-gold/40 flex items-center justify-center text-gold text-3xl">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 text-3xl">
                 ✓
               </div>
-              <p className="text-lg font-black uppercase text-cream mb-2">
+              <p className="text-lg font-black uppercase text-slate-900 mb-2">
                 {t.bookedTitle}
               </p>
-              <p className="text-sm text-cream/60 mb-6">
+              <p className="text-sm text-slate-600 mb-6">
                 {t.bookedBody(slotLabel)}
               </p>
               <button
@@ -326,7 +326,7 @@ export default function BookingModal({
 }
 
 const inputCls =
-  'w-full px-4 py-3 bg-navy border border-gold/25 rounded text-cream placeholder:text-cream/30 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition';
+  'w-full px-4 py-3 bg-white border border-stone-300 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 transition';
 
 const btnCls =
-  'w-full px-4 py-3 bg-gold hover:bg-gold-light active:bg-gold text-navy-deep font-bold uppercase tracking-wide rounded transition-colors disabled:opacity-50';
+  'w-full px-4 py-3 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 text-white font-bold uppercase tracking-wide rounded transition-colors disabled:opacity-50';

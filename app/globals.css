@@ -1,35 +1,20 @@
 @import "tailwindcss";
 
-/* Notary Garcia — navy + gold "signature" palette, chosen to match the
-   luxury/majestic style of established notary brands (deep jewel-tone
-   background, metallic gold accents, elegant serif) instead of a plain
-   corporate look. */
+/* Notary Jose — warm/professional palette.
+   Fondo cálido (stone-50 #fafaf9) + acento burgundy/amber que sugieren
+   sello notarial clásico. Light-only para consistencia visual con la
+   identidad "confiable / establecido". */
 :root {
-  --background: #0b1e33;
-  --foreground: #f7f3ea;
-  --navy: #0b1e33;
-  --navy-deep: #071322;
-  --navy-light: #16324f;
-  --gold: #c9a227;
-  --gold-light: #e8cf7c;
-  --gold-soft: rgba(201, 162, 39, 0.14);
-  --cream: #f7f3ea;
+  --background: #fafaf9;
+  --foreground: #0f172a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-navy: var(--navy);
-  --color-navy-deep: var(--navy-deep);
-  --color-navy-light: var(--navy-light);
-  --color-gold: var(--gold);
-  --color-gold-light: var(--gold-light);
-  --color-gold-soft: var(--gold-soft);
-  --color-cream: var(--cream);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-fraunces);
-  --font-accent: var(--font-fraunces-italic);
 }
 
 html, body {
