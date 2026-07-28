@@ -6,28 +6,29 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-full bg-stone-50">
-      <header className="border-b border-stone-200 bg-white/80 backdrop-blur sticky top-0 z-30">
+    <div className="min-h-full bg-navy">
+      <header className="border-b border-gold/20 bg-navy/90 backdrop-blur sticky top-0 z-30">
         <div className="max-w-4xl mx-auto px-6 py-4">
-          <Link href="/" className="text-lg font-black tracking-tight text-slate-900">
+          <Link href="/" className="font-display text-lg font-semibold tracking-tight text-cream">
             Notary Garcia
           </Link>
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-6 py-14">
-        <p className="text-xs font-bold uppercase tracking-[0.25em] text-amber-700 mb-2">Legal</p>
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 mb-2">
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-gold mb-2">Legal</p>
+        <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-cream mb-2">
           Privacy Policy
         </h1>
-        <p className="text-sm text-slate-500 mb-6">Last updated: July 25, 2026</p>
+        <p className="text-sm text-cream/50 mb-6">Last updated: July 25, 2026</p>
 
-        <div className="border border-amber-200 bg-amber-50 rounded-lg p-4 text-sm text-slate-600 mb-10">
+        <div className="border border-gold/30 bg-navy-light rounded-lg p-4 text-sm text-cream/70 mb-10">
           This policy is a general-purpose template drafted for the actual services offered on
           this site. It is not legal advice — have it reviewed by an attorney before treating it
           as final.
         </div>
 
+        <div className="bg-cream rounded-2xl p-8 sm:p-10 shadow-xl">
         <div className="prose-notary space-y-8 text-slate-700 leading-relaxed">
           <section>
             <h2 className="text-xl font-black text-slate-900 mb-2">1. Who we are</h2>
@@ -118,11 +119,12 @@ export default function PrivacyPage() {
             </p>
           </section>
         </div>
+        </div>
       </main>
 
-      <footer className="border-t border-stone-200 py-6 text-center bg-white">
-        <p className="text-xs text-slate-500">
-          <Link href="/" className="underline decoration-stone-300 hover:decoration-slate-500">
+      <footer className="border-t border-gold/15 py-6 text-center bg-navy">
+        <p className="text-xs text-cream/50">
+          <Link href="/" className="underline decoration-gold/20 hover:decoration-gold/50 hover:text-cream">
             ← Back to Notary Garcia
           </Link>
         </p>

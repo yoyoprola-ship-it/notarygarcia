@@ -209,27 +209,27 @@ export default function AppointmentSection({ lang }: Props) {
   return (
     <section
       id="book"
-      className="px-6 py-16 bg-stone-50 border-y border-stone-200"
+      className="px-6 py-16 bg-navy border-y border-gold/15"
     >
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-800 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-gold/40 text-[11px] font-bold uppercase tracking-[0.2em] text-gold mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-gold" />
             {t.eyebrow}
           </span>
-          <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 mb-2">
+          <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-cream mb-2">
             {t.title}
           </h2>
-          <p className="text-sm text-slate-600">{t.subtitle}</p>
+          <p className="text-sm text-cream/60">{t.subtitle}</p>
         </div>
 
-        {loading && <p className="text-slate-500">{t.loading}</p>}
+        {loading && <p className="text-cream/50">{t.loading}</p>}
         {error && (
-          <div className="border border-red-200 bg-red-50 text-red-800 rounded p-4 mb-4">
+          <div className="border border-red-400/30 bg-red-950/30 text-red-300 rounded p-4 mb-4">
             <p className="text-sm mb-3">{error}</p>
             <button
               onClick={load}
-              className="text-xs font-bold uppercase tracking-wider text-red-800 border border-red-300 hover:bg-red-100 rounded px-3 py-1"
+              className="text-xs font-bold uppercase tracking-wider text-red-300 border border-red-400/40 hover:bg-red-950/50 rounded px-3 py-1"
             >
               {t.refresh}
             </button>
@@ -237,14 +237,14 @@ export default function AppointmentSection({ lang }: Props) {
         )}
 
         {days && !loading && (
-          <div className="bg-white border border-stone-200 rounded-xl overflow-hidden">
+          <div className="bg-navy-light border border-gold/20 rounded-xl overflow-hidden">
             {/* Month header */}
-            <div className="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
-              <p className="text-base font-black text-slate-900 capitalize">{monthLabel}</p>
+            <div className="px-5 py-4 border-b border-gold/15 flex items-center justify-between">
+              <p className="text-base font-black text-cream capitalize">{monthLabel}</p>
               {/* Legend */}
               <div className="flex gap-3">
-                <span className="flex items-center gap-1 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                  <span className="w-2.5 h-2.5 rounded-sm border inline-block bg-green-100 border-green-300" />
+                <span className="flex items-center gap-1 text-[10px] text-cream/50 font-bold uppercase tracking-wider">
+                  <span className="w-2.5 h-2.5 rounded-sm border inline-block bg-emerald-500/20 border-emerald-400/40" />
                   {t.labels.available}
                 </span>
               </div>
@@ -254,7 +254,7 @@ export default function AppointmentSection({ lang }: Props) {
               {/* Day-of-week headers */}
               <div className="grid grid-cols-7 mb-2">
                 {dowLabels.map((d) => (
-                  <div key={d} className="text-center text-[10px] font-bold uppercase tracking-wider text-slate-400 py-1">
+                  <div key={d} className="text-center text-[10px] font-bold uppercase tracking-wider text-cream/40 py-1">
                     {d}
                   </div>
                 ))}
@@ -273,13 +273,13 @@ export default function AppointmentSection({ lang }: Props) {
 
                   let cellCls: string;
                   if (isPast || !hasEntry) {
-                    cellCls = 'text-slate-300 cursor-default';
+                    cellCls = 'text-cream/20 cursor-default';
                   } else if (hasAvailable) {
                     cellCls = isSelected
-                      ? 'bg-green-500 text-white border-green-600 shadow-sm cursor-pointer'
-                      : 'bg-green-50 text-green-800 border-green-300 hover:bg-green-100 cursor-pointer';
+                      ? 'bg-emerald-500 text-navy-deep border-emerald-400 shadow-sm cursor-pointer'
+                      : 'bg-emerald-500/10 text-emerald-300 border-emerald-400/30 hover:bg-emerald-500/20 cursor-pointer';
                   } else {
-                    cellCls = 'bg-stone-100 text-slate-400 border-stone-200 cursor-default opacity-60';
+                    cellCls = 'bg-navy text-cream/30 border-gold/10 cursor-default opacity-60';
                   }
 
                   return (
@@ -289,7 +289,7 @@ export default function AppointmentSection({ lang }: Props) {
                       onClick={() =>
                         setSelectedDate(isSelected ? null : cell.date)
                       }
-                      className={`aspect-square rounded-lg border flex flex-col items-center justify-center transition-all ${cellCls} ${isToday ? 'ring-2 ring-blue-400 ring-offset-1' : ''}`}
+                      className={`aspect-square rounded-lg border flex flex-col items-center justify-center transition-all ${cellCls} ${isToday ? 'ring-2 ring-gold ring-offset-1 ring-offset-navy-light' : ''}`}
                     >
                       <span className="text-sm font-black leading-none">
                         {cell.day}
@@ -301,28 +301,28 @@ export default function AppointmentSection({ lang }: Props) {
 
               {/* Hour slots for selected day */}
               {selectedDay && (
-                <div className="border-t border-stone-100 pt-4">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                <div className="border-t border-gold/15 pt-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-cream/50 mb-3">
                     {formatDateShort(selectedDate!)} — {t.pickHour}
                   </p>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {selectedDay.hours.filter((h) => h.available || h.reason === 'booked').map((h) => {
                       const isBooked = !h.available && h.reason === 'booked';
                       const btnCls = h.available
-                        ? 'border-green-300 bg-green-50 hover:border-green-500 hover:shadow-sm cursor-pointer'
+                        ? 'border-emerald-400/30 bg-emerald-500/10 hover:border-emerald-400/60 hover:shadow-sm cursor-pointer'
                         : isBooked
-                          ? 'border-red-200 bg-red-50 opacity-75 cursor-not-allowed'
-                          : 'border-stone-200 bg-stone-100 opacity-50 cursor-not-allowed';
+                          ? 'border-red-400/25 bg-red-950/25 opacity-75 cursor-not-allowed'
+                          : 'border-gold/10 bg-navy opacity-50 cursor-not-allowed';
                       const textCls = h.available
-                        ? 'text-slate-800'
+                        ? 'text-cream'
                         : isBooked
-                          ? 'text-red-700'
-                          : 'text-slate-400';
+                          ? 'text-red-300'
+                          : 'text-cream/30';
                       const statusCls = h.available
-                        ? 'text-green-700'
+                        ? 'text-emerald-300'
                         : isBooked
-                          ? 'text-red-500'
-                          : 'text-slate-400';
+                          ? 'text-red-400'
+                          : 'text-cream/30';
                       return (
                         <button
                           key={h.iso}

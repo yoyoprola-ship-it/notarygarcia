@@ -195,11 +195,11 @@ export default function CancelSection({ lang }: { lang: Lang }) {
 
   if (step === 'idle') {
     return (
-      <section id="cancel" className="px-6 py-10 bg-white border-t border-stone-200">
+      <section id="cancel" className="px-6 py-10 bg-navy border-t border-gold/15">
         <div className="max-w-2xl mx-auto text-center">
           <button
             onClick={() => setStep('phone')}
-            className="px-6 py-3 bg-white border border-stone-300 hover:border-amber-300 hover:shadow-sm rounded-full text-sm font-bold uppercase tracking-wide text-slate-700 transition-all"
+            className="px-6 py-3 bg-navy-light border border-gold/25 hover:border-gold/50 hover:shadow-sm rounded-full text-sm font-bold uppercase tracking-wide text-cream/80 transition-all"
           >
             {t.trigger}
           </button>
@@ -209,20 +209,20 @@ export default function CancelSection({ lang }: { lang: Lang }) {
   }
 
   return (
-    <section id="cancel" className="px-6 py-16 bg-white border-t border-stone-200">
+    <section id="cancel" className="px-6 py-16 bg-navy border-t border-gold/15">
       <div className="max-w-md mx-auto">
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h2 className="font-display text-2xl font-semibold tracking-tight text-slate-900 mb-1">
+            <h2 className="font-display text-2xl font-semibold tracking-tight text-cream mb-1">
               {t.title}
             </h2>
             {step !== 'bookings' && (
-              <p className="text-sm text-slate-500">{t.subtitle}</p>
+              <p className="text-sm text-cream/50">{t.subtitle}</p>
             )}
           </div>
           <button
             onClick={reset}
-            className="text-xs text-slate-400 hover:text-slate-700 ml-4 mt-1"
+            className="text-xs text-cream/40 hover:text-cream ml-4 mt-1"
           >
             {t.close}
           </button>
@@ -235,11 +235,11 @@ export default function CancelSection({ lang }: { lang: Lang }) {
               {[0, 1].map((i) => {
                 const idx = step === 'phone' ? 0 : 1;
                 return (
-                  <div key={i} className={`h-1 flex-1 rounded ${i <= idx ? 'bg-amber-700' : 'bg-stone-200'}`} />
+                  <div key={i} className={`h-1 flex-1 rounded ${i <= idx ? 'bg-gold' : 'bg-navy-light'}`} />
                 );
               })}
             </div>
-            <p className="text-xs text-slate-500 mb-6">
+            <p className="text-xs text-cream/50 mb-6">
               {step === 'phone' ? t.step1 : t.step2(phone)}
             </p>
           </>
@@ -248,11 +248,11 @@ export default function CancelSection({ lang }: { lang: Lang }) {
         {step === 'phone' && (
           <form onSubmit={handleSendSms} className="flex flex-col gap-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-cream/50 mb-1">
                 {t.phoneLabel}
               </label>
               <div className="flex items-center gap-2">
-                <span className="text-slate-500 text-sm">+1</span>
+                <span className="text-cream/50 text-sm">+1</span>
                 <input
                   type="tel" inputMode="tel" autoComplete="tel"
                   placeholder="(337) 123-4567"
@@ -262,7 +262,7 @@ export default function CancelSection({ lang }: { lang: Lang }) {
                 />
               </div>
             </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
+            {error && <p className="text-sm text-red-300">{error}</p>}
             <button type="submit" disabled={loading} className={btnCls}>
               {loading ? t.sending : t.sendCode}
             </button>
@@ -279,7 +279,7 @@ export default function CancelSection({ lang }: { lang: Lang }) {
               disabled={loading} required autoFocus
               className={`${inputCls} text-center text-2xl font-black tracking-[0.5em]`}
             />
-            {error && <p className="text-sm text-red-600">{error}</p>}
+            {error && <p className="text-sm text-red-300">{error}</p>}
             <button type="submit" disabled={loading || code.length !== 6} className={btnCls}>
               {loading ? t.verifying : t.verify}
             </button>
@@ -287,7 +287,7 @@ export default function CancelSection({ lang }: { lang: Lang }) {
               type="button"
               onClick={() => { setStep('phone'); setCode(''); setError(''); }}
               disabled={loading}
-              className="text-xs text-slate-500 hover:text-slate-800"
+              className="text-xs text-cream/50 hover:text-cream"
             >
               {t.changePhone}
             </button>
@@ -296,9 +296,9 @@ export default function CancelSection({ lang }: { lang: Lang }) {
 
         {step === 'bookings' && (
           <div>
-            {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
+            {error && <p className="text-sm text-red-300 mb-4">{error}</p>}
             {bookings.length === 0 ? (
-              <p className="text-sm text-slate-500">{t.noBookings}</p>
+              <p className="text-sm text-cream/50">{t.noBookings}</p>
             ) : (
               <div className="flex flex-col gap-3">
                 {bookings.map((b) => {
@@ -308,25 +308,25 @@ export default function CancelSection({ lang }: { lang: Lang }) {
                     <div
                       key={b.id}
                       className={`border rounded-lg p-4 flex items-center justify-between gap-4 transition-opacity ${
-                        isCancelled ? 'border-stone-200 opacity-50' : 'border-amber-200 bg-amber-50/30'
+                        isCancelled ? 'border-gold/10 opacity-50' : 'border-gold/25 bg-navy-light'
                       } ${isBusy ? 'opacity-60' : ''}`}
                     >
                       <div>
-                        <p className="text-sm font-bold text-slate-900">{b.customerName}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">
+                        <p className="text-sm font-bold text-cream">{b.customerName}</p>
+                        <p className="text-xs text-cream/50 mt-0.5">
                           <span className="font-bold uppercase tracking-wider mr-1">{t.when}</span>
                           {formatDateShort(b.slotDate)} · {formatSlotRange(b.slotHour)}
                         </p>
                       </div>
                       {isCancelled ? (
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400 shrink-0">
+                        <span className="text-xs font-bold uppercase tracking-wider text-cream/30 shrink-0">
                           {t.cancelled}
                         </span>
                       ) : (
                         <button
                           onClick={() => handleCancel(b)}
                           disabled={!!cancellingId}
-                          className="shrink-0 px-3 py-1.5 border border-red-200 text-red-700 hover:bg-red-50 disabled:opacity-40 rounded text-xs font-bold uppercase tracking-wide"
+                          className="shrink-0 px-3 py-1.5 border border-red-400/30 text-red-300 hover:bg-red-950/30 disabled:opacity-40 rounded text-xs font-bold uppercase tracking-wide"
                         >
                           {isBusy ? t.cancelling : t.cancelBtn}
                         </button>
@@ -346,7 +346,7 @@ export default function CancelSection({ lang }: { lang: Lang }) {
 }
 
 const inputCls =
-  'w-full px-4 py-3 bg-white border border-stone-300 rounded-md text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700 transition-colors';
+  'w-full px-4 py-3 bg-navy-light border border-gold/25 rounded-md text-cream placeholder:text-cream/30 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors';
 
 const btnCls =
-  'w-full px-4 py-3 bg-amber-800 hover:bg-amber-900 active:bg-amber-950 text-white font-bold uppercase tracking-wide rounded-md transition-colors disabled:opacity-50';
+  'w-full px-4 py-3 bg-gold hover:bg-gold-light active:bg-gold text-navy-deep font-bold uppercase tracking-wide rounded-md transition-colors disabled:opacity-50';
