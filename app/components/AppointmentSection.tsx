@@ -244,7 +244,7 @@ export default function AppointmentSection({ lang }: Props) {
               {/* Legend */}
               <div className="flex gap-3">
                 <span className="flex items-center gap-1 text-[10px] text-cream/50 font-bold uppercase tracking-wider">
-                  <span className="w-2.5 h-2.5 rounded-sm border inline-block bg-emerald-500/20 border-emerald-400/40" />
+                  <span className="w-2.5 h-2.5 rounded-sm border inline-block bg-gold/25 border-gold/60" />
                   {t.labels.available}
                 </span>
               </div>
@@ -276,10 +276,10 @@ export default function AppointmentSection({ lang }: Props) {
                     cellCls = 'text-cream/20 cursor-default';
                   } else if (hasAvailable) {
                     cellCls = isSelected
-                      ? 'bg-emerald-500 text-ink-deep border-emerald-400 shadow-sm cursor-pointer'
-                      : 'bg-emerald-500/10 text-emerald-300 border-emerald-400/30 hover:bg-emerald-500/20 cursor-pointer';
+                      ? 'bg-gold text-ink-deep border-gold shadow-sm cursor-pointer'
+                      : 'bg-gold/15 text-gold-light border-gold/50 hover:bg-gold/25 hover:border-gold cursor-pointer';
                   } else {
-                    cellCls = 'bg-ink text-cream/30 border-gold/10 cursor-default opacity-60';
+                    cellCls = 'bg-ink-light/60 text-cream/30 border-cream/10 cursor-default';
                   }
 
                   return (
@@ -309,17 +309,17 @@ export default function AppointmentSection({ lang }: Props) {
                     {selectedDay.hours.filter((h) => h.available || h.reason === 'booked').map((h) => {
                       const isBooked = !h.available && h.reason === 'booked';
                       const btnCls = h.available
-                        ? 'border-emerald-400/30 bg-emerald-500/10 hover:border-emerald-400/60 hover:shadow-sm cursor-pointer'
+                        ? 'border-gold/50 bg-gold/12 hover:border-gold hover:bg-gold/20 hover:shadow-sm cursor-pointer'
                         : isBooked
-                          ? 'border-red-400/25 bg-red-950/25 opacity-75 cursor-not-allowed'
-                          : 'border-gold/10 bg-ink opacity-50 cursor-not-allowed';
+                          ? 'border-red-500/40 bg-red-950/40 opacity-90 cursor-not-allowed'
+                          : 'border-cream/10 bg-ink-light/40 opacity-60 cursor-not-allowed';
                       const textCls = h.available
                         ? 'text-cream'
                         : isBooked
                           ? 'text-red-300'
                           : 'text-cream/30';
                       const statusCls = h.available
-                        ? 'text-emerald-300'
+                        ? 'text-gold-light'
                         : isBooked
                           ? 'text-red-400'
                           : 'text-cream/30';
