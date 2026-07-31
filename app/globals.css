@@ -1,20 +1,37 @@
 @import "tailwindcss";
 
-/* Notary Jose — warm/professional palette.
-   Fondo cálido (stone-50 #fafaf9) + acento burgundy/amber que sugieren
-   sello notarial clásico. Light-only para consistencia visual con la
-   identidad "confiable / establecido". */
+/* Notary Garcia — black + gold, matching the office portrait used as the
+   hero cover (dark charcoal marble, brass/gold fixtures, warm wood). True
+   black/charcoal rather than a blue-tinted navy so the site background
+   reads as one continuous surface with the photo, not a clashing tint. */
 :root {
-  --background: #fafaf9;
-  --foreground: #0f172a;
+  --background: #0d0c0e;
+  --foreground: #f5f1e6;
+  --ink: #0d0c0e;
+  --ink-deep: #060506;
+  --ink-light: #1c1a1c;
+  --gold: #c9a24d;
+  --gold-light: #e8cf8e;
+  --gold-soft: rgba(201, 162, 77, 0.14);
+  --cream: #f5f1e6;
+  --wood: #3a2a1c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-ink: var(--ink);
+  --color-ink-deep: var(--ink-deep);
+  --color-ink-light: var(--ink-light);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-soft: var(--gold-soft);
+  --color-cream: var(--cream);
+  --color-wood: var(--wood);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-fraunces);
+  --font-accent: var(--font-fraunces-italic);
 }
 
 html, body {
