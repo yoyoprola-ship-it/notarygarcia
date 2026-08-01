@@ -5,7 +5,7 @@
 # notaryhost.
 
 runConfig:
-  minInstances: 0
+  minInstances: 1
   maxInstances: 3
   cpu: 1
   memoryMiB: 512
