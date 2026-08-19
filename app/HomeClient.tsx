@@ -248,11 +248,10 @@ export default function HomeClient({
   return (
     <main className="min-h-screen flex flex-col">
       <TopBar lang={lang} onToggleLang={() => setLang(lang === 'en' ? 'es' : 'en')} t={t} />
-      <Hero t={t} ivrPhone={ivrPhone} directPhone={directPhone} />
+      <Hero t={t} ivrPhone={ivrPhone} directPhone={directPhone} lang={lang} isOpenNow={isOpenNow} />
       <HowItWorks t={t} />
       <TrustRow t={t} />
       <ServicesGrid t={t} />
-      <UrgentServiceSection lang={lang} isOpenNow={isOpenNow} />
       <AppointmentSection lang={lang} />
       <CancelSection lang={lang} />
       <LocationSection t={t} />
@@ -319,10 +318,14 @@ function Hero({
   t,
   ivrPhone,
   directPhone,
+  lang,
+  isOpenNow,
 }: {
   t: CopyBlock;
   ivrPhone: string;
   directPhone: string;
+  lang: Lang;
+  isOpenNow: boolean;
 }) {
   return (
     <section className="relative">
@@ -349,6 +352,7 @@ function Hero({
           <p className="text-lg text-cream/80 max-w-xl mx-auto mb-8" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.6)' }}>
             {t.hero.subtitle}
           </p>
+          <UrgentServiceSection lang={lang} isOpenNow={isOpenNow} />
           <div className="flex flex-col items-center gap-3">
             <a
               href="#book"

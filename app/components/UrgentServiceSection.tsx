@@ -132,81 +132,78 @@ export default function UrgentServiceSection({ lang, isOpenNow }: { lang: Lang; 
 
   if (!isOpenNow) return null;
 
+  // Lives inline in the Hero, right after the subtitle and above every
+  // other CTA — this is meant to read as THE most important action on the
+  // page, not just another section further down.
   return (
-    <section className="px-6 py-14 bg-ink-deep border-y border-gold/15">
-      <div className="max-w-2xl mx-auto text-center">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-gold/40 text-[11px] font-bold uppercase tracking-[0.2em] text-gold mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-          {t.eyebrow}
-        </span>
-        <h2 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-cream mb-2">
-          {t.title}
-        </h2>
+    <div className="mb-7 flex flex-col items-center">
+      {(phase === 'idle' || phase === 'sending') && (
+        <>
+          <button
+            onClick={handleClick}
+            disabled={phase === 'sending'}
+            className="relative px-10 py-4 bg-gold hover:bg-gold-light text-ink-deep font-black text-lg sm:text-xl rounded-full shadow-2xl shadow-black/50 ring-2 ring-gold/40 hover:-translate-y-0.5 transition-all disabled:opacity-60"
+          >
+            <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 border-2 border-ink" />
+            </span>
+            {t.button}
+          </button>
+          <p className="text-xs text-cream/60 mt-3 max-w-xs">{t.subtitle}</p>
+        </>
+      )}
 
-        {(phase === 'idle' || phase === 'sending') && (
-          <>
-            <p className="text-sm text-cream/60 mb-6">{t.subtitle}</p>
-            <button
-              onClick={handleClick}
-              disabled={phase === 'sending'}
-              className="px-7 py-3 bg-gold hover:bg-gold-light text-ink-deep font-bold rounded-full shadow-lg shadow-black/30 hover:-translate-y-0.5 transition-all disabled:opacity-60"
+      {phase === 'waiting' && (
+        <div className="bg-ink/70 backdrop-blur border border-gold/40 rounded-2xl px-7 py-5 flex flex-col items-center gap-1 shadow-xl shadow-black/40">
+          <p className="text-sm font-bold text-cream">{t.waitingTitle}</p>
+          <p className="text-xs text-cream/60">{t.waitingBody}</p>
+          <span className="font-display text-4xl font-black text-gold tabular-nums">{secondsLeft}s</span>
+        </div>
+      )}
+
+      {phase === 'confirmed' && (
+        <div className="bg-gold/15 backdrop-blur border border-gold/50 rounded-2xl px-7 py-6 max-w-sm shadow-xl shadow-black/40">
+          <p className="text-base font-bold text-gold-light mb-2">{t.confirmedTitle}</p>
+          <p className="text-sm text-cream/70 mb-1">{t.confirmedBody}</p>
+          <p className="text-lg font-bold text-cream mb-4">{address}</p>
+          {address && (
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm font-bold text-ink-deep bg-gold hover:bg-gold-light rounded-full px-5 py-2.5 transition-colors"
             >
-              {t.button}
-            </button>
-          </>
-        )}
+              {t.directions} →
+            </a>
+          )}
+        </div>
+      )}
 
-        {phase === 'waiting' && (
-          <div className="bg-ink-light border border-gold/20 rounded-2xl p-6 inline-flex flex-col items-center gap-3">
-            <p className="text-sm font-bold text-cream">{t.waitingTitle}</p>
-            <p className="text-xs text-cream/60">{t.waitingBody}</p>
-            <span className="font-display text-4xl font-black text-gold tabular-nums">{secondsLeft}s</span>
-          </div>
-        )}
+      {phase === 'expired' && (
+        <div className="bg-ink/70 backdrop-blur border border-red-400/40 rounded-2xl px-7 py-5 max-w-sm shadow-xl shadow-black/40">
+          <p className="text-sm font-bold text-red-200 mb-2">{t.expiredTitle}</p>
+          <p className="text-sm text-red-100/80 mb-4">{t.expiredBody}</p>
+          <button
+            onClick={reset}
+            className="text-xs font-bold uppercase tracking-wider text-red-200 border border-red-400/40 hover:bg-red-950/50 rounded-full px-4 py-2"
+          >
+            {t.tryAgain}
+          </button>
+        </div>
+      )}
 
-        {phase === 'confirmed' && (
-          <div className="bg-gold/10 border border-gold/40 rounded-2xl p-6">
-            <p className="text-base font-bold text-gold-light mb-2">{t.confirmedTitle}</p>
-            <p className="text-sm text-cream/70 mb-1">{t.confirmedBody}</p>
-            <p className="text-lg font-bold text-cream mb-4">{address}</p>
-            {address && (
-              <a
-                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-bold text-ink-deep bg-gold hover:bg-gold-light rounded-full px-5 py-2.5 transition-colors"
-              >
-                {t.directions} →
-              </a>
-            )}
-          </div>
-        )}
-
-        {phase === 'expired' && (
-          <div className="border border-red-400/30 bg-red-950/30 text-red-200 rounded-2xl p-6">
-            <p className="text-sm font-bold mb-2">{t.expiredTitle}</p>
-            <p className="text-sm mb-4">{t.expiredBody}</p>
-            <button
-              onClick={reset}
-              className="text-xs font-bold uppercase tracking-wider text-red-200 border border-red-400/40 hover:bg-red-950/50 rounded-full px-4 py-2"
-            >
-              {t.tryAgain}
-            </button>
-          </div>
-        )}
-
-        {phase === 'error' && (
-          <div className="border border-red-400/30 bg-red-950/30 text-red-200 rounded-2xl p-6">
-            <p className="text-sm mb-4">{t.errorBody}</p>
-            <button
-              onClick={reset}
-              className="text-xs font-bold uppercase tracking-wider text-red-200 border border-red-400/40 hover:bg-red-950/50 rounded-full px-4 py-2"
-            >
-              {t.tryAgain}
-            </button>
-          </div>
-        )}
-      </div>
-    </section>
+      {phase === 'error' && (
+        <div className="bg-ink/70 backdrop-blur border border-red-400/40 rounded-2xl px-7 py-5 max-w-sm shadow-xl shadow-black/40">
+          <p className="text-sm text-red-100/80 mb-4">{t.errorBody}</p>
+          <button
+            onClick={reset}
+            className="text-xs font-bold uppercase tracking-wider text-red-200 border border-red-400/40 hover:bg-red-950/50 rounded-full px-4 py-2"
+          >
+            {t.tryAgain}
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
