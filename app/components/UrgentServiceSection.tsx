@@ -142,12 +142,8 @@ export default function UrgentServiceSection({ lang, isOpenNow }: { lang: Lang; 
           <button
             onClick={handleClick}
             disabled={phase === 'sending'}
-            className="relative px-10 py-4 bg-gold hover:bg-gold-light text-ink-deep font-black text-lg sm:text-xl rounded-full shadow-2xl shadow-black/50 ring-2 ring-gold/40 hover:-translate-y-0.5 transition-all disabled:opacity-60"
+            className="urgent-pulse-bg relative px-10 py-4 text-ink-deep font-black text-lg sm:text-xl rounded-full shadow-2xl shadow-black/50 ring-2 ring-gold/40 hover:-translate-y-0.5 transition-transform disabled:opacity-60"
           >
-            <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 border-2 border-ink" />
-            </span>
             {t.button}
           </button>
           <p className="text-xs text-cream/60 mt-3 max-w-xs">{t.subtitle}</p>
