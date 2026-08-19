@@ -5,6 +5,7 @@ import { validateTwilioSignature } from '@/app/lib/validateTwilio';
 import { sendSms } from '@/app/lib/twilioSms';
 import { getIvrConfig } from '@/app/lib/ivrConfig';
 import { getOwnerPhone } from '@/app/lib/notaryProfile';
+import { createUrgentRequest } from '@/app/lib/urgentService';
 
 const BASE = process.env.SITE_URL ?? 'https://notarygarcia.notaryhost.com';
 const SITE_URL_TEXT = process.env.SITE_URL ?? 'https://notarygarcia.notaryhost.com';
@@ -36,12 +37,12 @@ export async function POST(request: NextRequest) {
   const digits = params.Digits;
   const callerE164 = params.From ?? '';
 
-  // Track engaged calls (chose option 1 or 2) — deduped by CallSid
-  if ((digits === '1' || digits === '2') && params.CallSid) {
+  // Track engaged calls (chose option 1, 2 or 3) — deduped by CallSid
+  if ((digits === '1' || digits === '2' || digits === '3') && params.CallSid) {
     void adminDb.collection('notarygarcia_calls').doc(params.CallSid).create({
       callerPhone: callerE164,
       callSid: params.CallSid,
-      action: digits === '1' ? 'book' : 'consult',
+      action: digits === '1' ? 'urgent' : digits === '2' ? 'book' : 'consult',
       createdAt: FieldValue.serverTimestamp(),
     }).catch(() => {});
   }
@@ -49,8 +50,24 @@ export async function POST(request: NextRequest) {
   const cfg = await getIvrConfig();
   const voice = cfg.voices[lang];
 
-  // Option 1: Book appointment
+  // Option 1: Urgent service — text the owner right now, let the caller
+  // know they'll hear back shortly (the confirmation/address comes as a
+  // follow-up SMS once/if the owner replies YES, since the call is over
+  // by then).
   if (digits === '1') {
+    const callerDigits = callerE164.replace(/\D/g, '').slice(-10);
+    if (callerDigits.length === 10) {
+      void createUrgentRequest('ivr', callerDigits);
+    }
+    return twiml(`
+<Response>
+  <Say voice="${voice}">${cfg.urgentPrompt[lang]}</Say>
+  <Hangup/>
+</Response>`);
+  }
+
+  // Option 2: Book appointment
+  if (digits === '2') {
     void sendSms(callerE164, SMS_TEXT[lang]);
     return twiml(`
 <Response>
@@ -61,8 +78,8 @@ export async function POST(request: NextRequest) {
 </Response>`);
   }
 
-  // Option 2: Voice consultation
-  if (digits === '2') {
+  // Option 3: Voice consultation
+  if (digits === '3') {
     return twiml(`
 <Response>
   <Say voice="${voice}">${cfg.consultPrompt[lang]}</Say>
@@ -72,8 +89,8 @@ export async function POST(request: NextRequest) {
 </Response>`);
   }
 
-  // Option 3: Direct call to notary
-  if (digits === '3') {
+  // Option 4: Direct call to notary
+  if (digits === '4') {
     const ownerPhone = await getOwnerPhone().catch(() => '');
     if (!ownerPhone) {
       return twiml(`

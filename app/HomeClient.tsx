@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import AppointmentSection from './components/AppointmentSection';
 import CancelSection from './components/CancelSection';
+import UrgentServiceSection from './components/UrgentServiceSection';
 
 // Landing pública de Notary Garcia. Portea la sección de la app original
 // (lafayette-market/app/services/providers/NotaryJose) como subdomain
@@ -235,9 +236,11 @@ type Lang = 'en' | 'es';
 export default function HomeClient({
   ivrPhone,
   directPhone,
+  isOpenNow,
 }: {
   ivrPhone: string;
   directPhone: string;
+  isOpenNow: boolean;
 }) {
   const [lang, setLang] = useState<Lang>('en');
   const t = COPY[lang];
@@ -249,6 +252,7 @@ export default function HomeClient({
       <HowItWorks t={t} />
       <TrustRow t={t} />
       <ServicesGrid t={t} />
+      <UrgentServiceSection lang={lang} isOpenNow={isOpenNow} />
       <AppointmentSection lang={lang} />
       <CancelSection lang={lang} />
       <LocationSection t={t} />

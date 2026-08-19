@@ -5,6 +5,7 @@ export interface IvrConfig {
   intro:         { en: string; es: string };
   langPrompt:    { en: string; es: string };
   menu:          { en: string; es: string };
+  urgentPrompt:  { en: string; es: string };
   bookConfirm:   { en: string; es: string };
   bookBye:       { en: string; es: string };
   consultPrompt: { en: string; es: string };
@@ -26,8 +27,12 @@ export const DEFAULT_IVR_CONFIG: IvrConfig = {
     es: 'Para español, marque dos.',
   },
   menu: {
-    en: 'Press 1 to book an appointment. Press 2 to leave a voice consultation. Press 3 to speak directly with the notary.',
-    es: 'Marque uno para agendar una cita. Marque dos para dejar una consulta de voz. Marque tres para hablar directamente con el notario.',
+    en: 'Press 1 if you need urgent service right now. Press 2 to book an appointment. Press 3 to leave a voice consultation. Press 4 to speak directly with the notary.',
+    es: 'Marque uno si necesita servicio urgente ahora mismo. Marque dos para agendar una cita. Marque tres para dejar una consulta de voz. Marque cuatro para hablar directamente con el notario.',
+  },
+  urgentPrompt: {
+    en: 'We have notified the notary of your urgent request. If available, you will receive a text message shortly with confirmation and directions. Goodbye.',
+    es: 'Hemos notificado al notario de su solicitud urgente. Si está disponible, recibirá un mensaje de texto en breve con la confirmación y la dirección. Hasta luego.',
   },
   bookConfirm: {
     en: `Visit ${SITE_DISPLAY} to book your appointment online. A text message with the link has been sent to your phone.`,

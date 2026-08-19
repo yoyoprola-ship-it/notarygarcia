@@ -86,6 +86,13 @@ export function isDateBlocked(
   return !!cfg?.blockedDates?.includes(dateStr);
 }
 
+/** ¿El notario está dentro de su horario laboral en este momento (CT)? */
+export function isOpenNow(cfg: WorkingHours | null): boolean {
+  const today = ctDateStr();
+  if (isDateBlocked(today, cfg)) return false;
+  return openHoursFor(dayOfWeekOf(today), cfg).includes(ctHour());
+}
+
 /** Format hora "8" → "8 AM", "13" → "1 PM", "20" → "8 PM". */
 export function formatHour(h: number): string {
   const suffix = h >= 12 ? 'PM' : 'AM';
