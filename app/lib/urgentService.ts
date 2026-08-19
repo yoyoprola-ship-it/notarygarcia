@@ -12,6 +12,27 @@ import { getNotaryProfile } from './notaryProfile';
 const COLLECTION = 'notarygarcia_urgent_requests';
 const WINDOW_MS = 60_000;
 
+// Every urgent request texts the owner — a real, per-message Twilio cost —
+// so we cap it globally to one every COOLDOWN_MS, regardless of how many
+// different visitors/callers try (not just per-IP), to stop a bot or a
+// bored customer from running up the bill or spamming the owner's phone.
+const COOLDOWN_MS = 2 * 60_000;
+const COOLDOWN_REF = adminDb.doc('notarygarcia_urgent_meta/cooldown');
+
+// Atomically claims the right to send the next urgent-request SMS. Uses a
+// transaction (not a query) so two near-simultaneous requests can't both
+// slip through the cooldown check.
+async function claimCooldownSlot(): Promise<boolean> {
+  return adminDb.runTransaction(async (tx) => {
+    const snap = await tx.get(COOLDOWN_REF);
+    const now = Date.now();
+    const last = snap.exists ? (snap.data()!.lastCreatedAt as number) || 0 : 0;
+    if (now - last < COOLDOWN_MS) return false;
+    tx.set(COOLDOWN_REF, { lastCreatedAt: now }, { merge: true });
+    return true;
+  });
+}
+
 export type UrgentChannel = 'web' | 'ivr';
 export type UrgentStatus = 'pending' | 'confirmed' | 'expired';
 
@@ -27,7 +48,9 @@ export interface UrgentRequest {
 export async function createUrgentRequest(
   channel: UrgentChannel,
   customerPhone?: string
-): Promise<{ id: string; expiresAt: number }> {
+): Promise<{ id: string; expiresAt: number } | null> {
+  if (!(await claimCooldownSlot())) return null;
+
   const now = Date.now();
   const expiresAt = Timestamp.fromMillis(now + WINDOW_MS);
   const ref = await adminDb.collection(COLLECTION).add({

@@ -56,12 +56,11 @@ export async function POST(request: NextRequest) {
   // by then).
   if (digits === '1') {
     const callerDigits = callerE164.replace(/\D/g, '').slice(-10);
-    if (callerDigits.length === 10) {
-      void createUrgentRequest('ivr', callerDigits);
-    }
+    const result = callerDigits.length === 10 ? await createUrgentRequest('ivr', callerDigits) : null;
+    const message = result ? cfg.urgentPrompt[lang] : cfg.urgentCooldown[lang];
     return twiml(`
 <Response>
-  <Say voice="${voice}">${cfg.urgentPrompt[lang]}</Say>
+  <Say voice="${voice}">${message}</Say>
   <Hangup/>
 </Response>`);
   }

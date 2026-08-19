@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 // address, polling /api/urgent-service/status every few seconds.
 
 type Lang = 'en' | 'es';
-type Phase = 'idle' | 'sending' | 'waiting' | 'confirmed' | 'expired' | 'error';
+type Phase = 'idle' | 'sending' | 'waiting' | 'confirmed' | 'expired' | 'cooldown' | 'error';
 
 interface Copy {
   eyebrow: string;
@@ -21,6 +21,7 @@ interface Copy {
   directions: string;
   expiredTitle: string;
   expiredBody: string;
+  cooldownBody: string;
   errorBody: string;
   tryAgain: string;
 }
@@ -38,6 +39,7 @@ const COPY: Record<Lang, Copy> = {
     directions: 'Get directions',
     expiredTitle: 'No response yet',
     expiredBody: "The notary couldn't confirm availability right now. Please book a regular appointment below, or try again in a few minutes.",
+    cooldownBody: 'Someone just requested urgent service. Please wait a couple of minutes before trying again.',
     errorBody: 'Something went wrong. Please try again.',
     tryAgain: 'Try again',
   },
@@ -53,6 +55,7 @@ const COPY: Record<Lang, Copy> = {
     directions: 'Cómo llegar',
     expiredTitle: 'Sin respuesta por ahora',
     expiredBody: 'El notario no pudo confirmar disponibilidad en este momento. Podés agendar una cita normal más abajo, o volver a intentar en unos minutos.',
+    cooldownBody: 'Alguien acaba de solicitar servicio urgente. Por favor esperá unos minutos antes de volver a intentar.',
     errorBody: 'Algo salió mal. Intentá de nuevo.',
     tryAgain: 'Intentar de nuevo',
   },
@@ -84,7 +87,10 @@ export default function UrgentServiceSection({ lang, isOpenNow }: { lang: Lang; 
     try {
       const res = await fetch('/api/urgent-service/request', { method: 'POST' });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'failed');
+      if (!res.ok) {
+        setPhase(data.error === 'cooldown' ? 'cooldown' : 'error');
+        return;
+      }
 
       requestIdRef.current = data.id;
       const expiresAt: number = data.expiresAt;
@@ -183,6 +189,18 @@ export default function UrgentServiceSection({ lang, isOpenNow }: { lang: Lang; 
           <button
             onClick={reset}
             className="text-xs font-bold uppercase tracking-wider text-red-200 border border-red-400/40 hover:bg-red-950/50 rounded-full px-4 py-2"
+          >
+            {t.tryAgain}
+          </button>
+        </div>
+      )}
+
+      {phase === 'cooldown' && (
+        <div className="bg-ink/70 backdrop-blur border border-gold/40 rounded-2xl px-7 py-5 max-w-sm shadow-xl shadow-black/40">
+          <p className="text-sm text-cream/80 mb-4">{t.cooldownBody}</p>
+          <button
+            onClick={reset}
+            className="text-xs font-bold uppercase tracking-wider text-gold border border-gold/40 hover:bg-gold-soft rounded-full px-4 py-2"
           >
             {t.tryAgain}
           </button>

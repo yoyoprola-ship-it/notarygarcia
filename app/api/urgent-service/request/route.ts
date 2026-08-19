@@ -10,9 +10,12 @@ import type { WorkingHours } from '@/app/types';
 // owner and returns a request id + expiry for the client to poll/countdown.
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request.headers);
+  // Tight per-IP throttle as a secondary guard — the real anti-abuse limit
+  // is the global cooldown inside createUrgentRequest, which caps the whole
+  // site (every visitor combined) to one owner SMS every couple of minutes.
   const rl = await rateLimitOr429(`nj-urgent-web-ip:${ip}`, {
-    maxRequests: 5,
-    windowMs: 60_000,
+    maxRequests: 3,
+    windowMs: 10 * 60_000,
   });
   if (rl) return rl;
 
@@ -23,8 +26,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'closed' }, { status: 400 });
     }
 
-    const { id, expiresAt } = await createUrgentRequest('web');
-    return NextResponse.json({ id, expiresAt });
+    const result = await createUrgentRequest('web');
+    if (!result) {
+      return NextResponse.json({ error: 'cooldown' }, { status: 429 });
+    }
+    return NextResponse.json(result);
   } catch (err) {
     console.error('[urgent-service/request] failed:', err);
     return NextResponse.json({ error: 'Could not send the request' }, { status: 500 });

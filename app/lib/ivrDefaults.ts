@@ -6,6 +6,7 @@ export interface IvrConfig {
   langPrompt:    { en: string; es: string };
   menu:          { en: string; es: string };
   urgentPrompt:  { en: string; es: string };
+  urgentCooldown: { en: string; es: string };
   bookConfirm:   { en: string; es: string };
   bookBye:       { en: string; es: string };
   consultPrompt: { en: string; es: string };
@@ -33,6 +34,10 @@ export const DEFAULT_IVR_CONFIG: IvrConfig = {
   urgentPrompt: {
     en: 'We have notified the notary of your urgent request. If available, you will receive a text message shortly with confirmation and directions. Goodbye.',
     es: 'Hemos notificado al notario de su solicitud urgente. Si está disponible, recibirá un mensaje de texto en breve con la confirmación y la dirección. Hasta luego.',
+  },
+  urgentCooldown: {
+    en: 'We just received an urgent request. Please try again in a couple of minutes. Goodbye.',
+    es: 'Acabamos de recibir una solicitud urgente. Por favor intente de nuevo en unos minutos. Hasta luego.',
   },
   bookConfirm: {
     en: `Visit ${SITE_DISPLAY} to book your appointment online. A text message with the link has been sent to your phone.`,
