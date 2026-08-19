@@ -36,8 +36,8 @@ export const DEFAULT_IVR_CONFIG: IvrConfig = {
     es: 'Hemos notificado al notario de su solicitud urgente. Si está disponible, recibirá un mensaje de texto en breve con la confirmación y la dirección. Hasta luego.',
   },
   urgentCooldown: {
-    en: 'We just received an urgent request. Please try again in a couple of minutes. Goodbye.',
-    es: 'Acabamos de recibir una solicitud urgente. Por favor intente de nuevo en unos minutos. Hasta luego.',
+    en: 'You have already sent a few urgent requests recently. Please try again in a few minutes. Goodbye.',
+    es: 'Ya ha enviado varias solicitudes urgentes recientemente. Por favor intente de nuevo en unos minutos. Hasta luego.',
   },
   bookConfirm: {
     en: `Visit ${SITE_DISPLAY} to book your appointment online. A text message with the link has been sent to your phone.`,

@@ -39,7 +39,7 @@ const COPY: Record<Lang, Copy> = {
     directions: 'Get directions',
     expiredTitle: 'No response yet',
     expiredBody: "The notary couldn't confirm availability right now. Please book a regular appointment below, or try again in a few minutes.",
-    cooldownBody: 'Someone just requested urgent service. Please wait a couple of minutes before trying again.',
+    cooldownBody: "You've already sent a few urgent requests recently. Please wait a bit before trying again.",
     errorBody: 'Something went wrong. Please try again.',
     tryAgain: 'Try again',
   },
@@ -55,7 +55,7 @@ const COPY: Record<Lang, Copy> = {
     directions: 'Cómo llegar',
     expiredTitle: 'Sin respuesta por ahora',
     expiredBody: 'El notario no pudo confirmar disponibilidad en este momento. Podés agendar una cita normal más abajo, o volver a intentar en unos minutos.',
-    cooldownBody: 'Alguien acaba de solicitar servicio urgente. Por favor esperá unos minutos antes de volver a intentar.',
+    cooldownBody: 'Ya enviaste varias solicitudes urgentes recientemente. Por favor esperá un poco antes de volver a intentar.',
     errorBody: 'Algo salió mal. Intentá de nuevo.',
     tryAgain: 'Intentar de nuevo',
   },
@@ -88,7 +88,7 @@ export default function UrgentServiceSection({ lang, isOpenNow }: { lang: Lang; 
       const res = await fetch('/api/urgent-service/request', { method: 'POST' });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setPhase(data.error === 'cooldown' ? 'cooldown' : 'error');
+        setPhase(res.status === 429 ? 'cooldown' : 'error');
         return;
       }
 

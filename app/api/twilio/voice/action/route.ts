@@ -6,6 +6,7 @@ import { sendSms } from '@/app/lib/twilioSms';
 import { getIvrConfig } from '@/app/lib/ivrConfig';
 import { getOwnerPhone } from '@/app/lib/notaryProfile';
 import { createUrgentRequest } from '@/app/lib/urgentService';
+import { checkRateLimit } from '@/app/lib/rateLimit';
 
 const BASE = process.env.SITE_URL ?? 'https://notarygarcia.notaryhost.com';
 const SITE_URL_TEXT = process.env.SITE_URL ?? 'https://notarygarcia.notaryhost.com';
@@ -56,8 +57,15 @@ export async function POST(request: NextRequest) {
   // by then).
   if (digits === '1') {
     const callerDigits = callerE164.replace(/\D/g, '').slice(-10);
-    const result = callerDigits.length === 10 ? await createUrgentRequest('ivr', callerDigits) : null;
-    const message = result ? cfg.urgentPrompt[lang] : cfg.urgentCooldown[lang];
+    // Per-caller throttle (the phone equivalent of the website's per-IP
+    // limit) — stops one number from repeatedly triggering owner texts.
+    const rl = callerDigits.length === 10
+      ? await checkRateLimit(`nj-urgent-ivr-phone:${callerDigits}`, { maxRequests: 3, windowMs: 10 * 60_000 })
+      : { allowed: false, remaining: 0, retryAfterMs: 0 };
+    if (rl.allowed) {
+      void createUrgentRequest('ivr', callerDigits);
+    }
+    const message = rl.allowed ? cfg.urgentPrompt[lang] : cfg.urgentCooldown[lang];
     return twiml(`
 <Response>
   <Say voice="${voice}">${message}</Say>

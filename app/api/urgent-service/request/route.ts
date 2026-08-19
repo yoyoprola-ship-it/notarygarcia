@@ -10,9 +10,9 @@ import type { WorkingHours } from '@/app/types';
 // owner and returns a request id + expiry for the client to poll/countdown.
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request.headers);
-  // Tight per-IP throttle as a secondary guard — the real anti-abuse limit
-  // is the global cooldown inside createUrgentRequest, which caps the whole
-  // site (every visitor combined) to one owner SMS every couple of minutes.
+  // Per-IP throttle — the anti-abuse guard for this endpoint. Each urgent
+  // request texts the owner (real Twilio cost), so a single visitor/bot
+  // can't rack up more than 3 in 10 minutes.
   const rl = await rateLimitOr429(`nj-urgent-web-ip:${ip}`, {
     maxRequests: 3,
     windowMs: 10 * 60_000,
@@ -27,9 +27,6 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await createUrgentRequest('web');
-    if (!result) {
-      return NextResponse.json({ error: 'cooldown' }, { status: 429 });
-    }
     return NextResponse.json(result);
   } catch (err) {
     console.error('[urgent-service/request] failed:', err);
