@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { auth } from '@/app/lib/firebase';
 
 interface ThreadItem {
-  type: 'message' | 'call';
   sid: string;
   direction: 'inbound' | 'outbound';
   body?: string;
@@ -41,8 +40,18 @@ function formatDuration(s?: number): string {
   return m > 0 ? `${m}m ${sec}s` : `${sec}s`;
 }
 
+function previewFor(item: ThreadItem, kind: 'message' | 'call'): string {
+  if (kind === 'call') {
+    const dir = item.direction === 'inbound' ? 'Inbound' : 'Outbound';
+    return `${dir} · ${item.status} · ${formatDuration(item.duration)}`;
+  }
+  return item.body ?? '';
+}
+
 export default function OwnerPhonePage() {
-  const [threads, setThreads] = useState<Thread[]>([]);
+  const [messageThreads, setMessageThreads] = useState<Thread[]>([]);
+  const [callThreads, setCallThreads] = useState<Thread[]>([]);
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -57,7 +66,8 @@ export default function OwnerPhonePage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? 'Load failed');
-      setThreads(data.threads as Thread[]);
+      setMessageThreads(data.messageThreads as Thread[]);
+      setCallThreads(data.callThreads as Thread[]);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error loading');
     } finally {
@@ -73,21 +83,33 @@ export default function OwnerPhonePage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-black tracking-tight text-slate-900">Phone</h1>
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900">Phone</h1>
+          <p className="text-xs text-slate-400 mt-0.5">Last 6 months</p>
+        </div>
         <button onClick={load} className="text-xs text-slate-500 hover:text-slate-800 border border-stone-300 px-3 py-1.5 rounded">
           Refresh
         </button>
       </div>
-      <p className="text-xs text-slate-500 mb-6">
-        Every call and text on your number, grouped by who you were talking to. Last 6 months.
-      </p>
 
-      {threads.length === 0 ? (
-        <p className="text-sm text-slate-500">No calls or messages yet.</p>
+      <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Messages</h2>
+      {messageThreads.length === 0 ? (
+        <p className="text-sm text-slate-500 mb-6">No messages yet.</p>
       ) : (
-        <div className="flex flex-col gap-4">
-          {threads.map((t) => (
-            <ThreadCard key={t.phone} t={t} />
+        <div className="border border-stone-200 rounded-lg overflow-hidden mb-6 bg-white divide-y divide-stone-200">
+          {messageThreads.map((t) => (
+            <ThreadRow key={t.phone} t={t} kind="message" />
+          ))}
+        </div>
+      )}
+
+      <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Calls</h2>
+      {callThreads.length === 0 ? (
+        <p className="text-sm text-slate-500">No calls yet.</p>
+      ) : (
+        <div className="border border-stone-200 rounded-lg overflow-hidden bg-white divide-y divide-stone-200">
+          {callThreads.map((t) => (
+            <ThreadRow key={t.phone} t={t} kind="call" />
           ))}
         </div>
       )}
@@ -95,7 +117,7 @@ export default function OwnerPhonePage() {
   );
 }
 
-function ThreadCard({ t }: { t: Thread }) {
+function ThreadRow({ t, kind }: { t: Thread; kind: 'message' | 'call' }) {
   const [expanded, setExpanded] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [replying, setReplying] = useState(false);
@@ -125,79 +147,76 @@ function ThreadCard({ t }: { t: Thread }) {
     }
   };
 
-  const visibleItems = expanded ? t.items : t.items.slice(0, 3);
-  const calls = t.items.filter((i) => i.type === 'call').length;
-  const messages = t.items.filter((i) => i.type === 'message').length;
+  const last = t.items[0];
 
   return (
-    <div className="border border-stone-200 bg-white rounded-lg p-5">
-      <div className="flex items-start justify-between gap-4 mb-4">
-        <div>
-          <span className="text-base font-black text-slate-900">{formatPhone(t.phone)}</span>
-          <p className="text-xs text-slate-500">
-            {formatDate(t.lastAt)} · {calls} call{calls === 1 ? '' : 's'} · {messages} message{messages === 1 ? '' : 's'}
-          </p>
-        </div>
-        <a
-          href={`tel:${t.phone}`}
-          className="shrink-0 px-3 py-1.5 text-xs font-bold uppercase tracking-wide border border-green-300 text-green-800 hover:bg-green-50 rounded"
-        >
-          Call
-        </a>
-      </div>
+    <div>
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        className={`w-full flex items-center justify-between gap-4 px-4 py-2 text-left hover:bg-stone-50 ${expanded ? 'bg-stone-50' : ''}`}
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm">
+            <span className="font-bold text-slate-900">{formatPhone(t.phone)}</span>
+            <span className="text-slate-400"> · {t.items.length} {kind === 'call' ? 'call' : 'message'}{t.items.length === 1 ? '' : 's'}</span>
+          </span>
+          <span className="block text-xs text-slate-500 truncate">{previewFor(last, kind)}</span>
+        </span>
+        <span className="shrink-0 flex items-center gap-3 text-xs text-slate-400">
+          <span>{formatDate(t.lastAt)}</span>
+          <span className="text-[10px]">{expanded ? '▲' : '▼'}</span>
+        </span>
+      </button>
 
-      <ul className="flex flex-col gap-1.5 mb-3">
-        {visibleItems.map((item) => (
-          <li key={item.sid} className="text-xs text-slate-600 flex items-start gap-2">
-            <span className={`shrink-0 font-bold ${item.direction === 'inbound' ? 'text-blue-700' : 'text-slate-400'}`}>
-              {item.direction === 'inbound' ? '←' : '→'}
-            </span>
-            <span className="shrink-0 text-slate-400">{formatDate(item.at)}</span>
-            {item.type === 'call' ? (
-              <span>Call · {item.status} · {formatDuration(item.duration)}</span>
-            ) : (
-              <span className="text-slate-800">{item.body}</span>
-            )}
-          </li>
-        ))}
-      </ul>
-      {t.items.length > 3 && (
-        <button
-          onClick={() => setExpanded((v) => !v)}
-          className="text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-700 mb-3"
-        >
-          {expanded ? 'Show less' : `Show all ${t.items.length}`}
-        </button>
-      )}
+      {expanded && (
+        <div className="px-4 pb-3 pt-1 border-t border-dashed border-stone-200">
+          <ul className="flex flex-col gap-1.5 my-3 max-h-60 overflow-y-auto">
+            {t.items.map((item) => (
+              <li key={item.sid} className="text-xs text-slate-600 flex items-start gap-2">
+                <span className={`shrink-0 font-bold ${item.direction === 'inbound' ? 'text-blue-700' : 'text-slate-400'}`}>
+                  {item.direction === 'inbound' ? '←' : '→'}
+                </span>
+                <span className="shrink-0 text-slate-400">{formatDate(item.at)}</span>
+                <span className="text-slate-800">{previewFor(item, kind)}</span>
+              </li>
+            ))}
+          </ul>
 
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-          Reply by SMS
-        </p>
-        {replyDone ? (
-          <p className="text-xs text-green-700 font-bold">Message sent ✓</p>
-        ) : (
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Write a message…"
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              maxLength={320}
-              className="flex-1 px-3 py-2 text-sm border border-stone-300 rounded focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700"
-              onKeyDown={(e) => { if (e.key === 'Enter') void sendReply(); }}
-            />
-            <button
-              onClick={sendReply}
-              disabled={replying || !replyText.trim()}
-              className="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold uppercase tracking-wide rounded disabled:opacity-50"
+          <div className="flex items-center gap-2">
+            <a
+              href={`tel:${t.phone}`}
+              className="shrink-0 px-3 py-1.5 text-xs font-bold uppercase tracking-wide border border-green-300 text-green-800 hover:bg-green-50 rounded"
             >
-              {replying ? '…' : 'Send'}
-            </button>
+              Call
+            </a>
+            {kind === 'message' && (
+              replyDone ? (
+                <span className="text-xs text-green-700 font-bold">Sent ✓</span>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Write a message…"
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    maxLength={320}
+                    className="flex-1 px-3 py-1.5 text-sm border border-stone-300 rounded focus:outline-none focus:border-amber-700 focus:ring-1 focus:ring-amber-700"
+                    onKeyDown={(e) => { if (e.key === 'Enter') void sendReply(); }}
+                  />
+                  <button
+                    onClick={sendReply}
+                    disabled={replying || !replyText.trim()}
+                    className="px-4 py-1.5 bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold uppercase tracking-wide rounded disabled:opacity-50"
+                  >
+                    {replying ? '…' : 'Send'}
+                  </button>
+                </>
+              )
+            )}
           </div>
-        )}
-        {replyError && <p className="text-xs text-red-600 mt-1">{replyError}</p>}
-      </div>
+          {replyError && <p className="text-xs text-red-600 mt-1">{replyError}</p>}
+        </div>
+      )}
     </div>
   );
 }
