@@ -54,6 +54,7 @@ export default function OwnerLayout({ children }: { children: React.ReactNode })
     { href: '/owner/bookings', label: 'Bookings' },
     { href: '/owner/hours', label: 'Hours' },
     { href: '/owner/consultations', label: 'Consultations' },
+    { href: '/owner/phone', label: 'Phone' },
   ];
 
   return (
