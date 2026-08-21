@@ -1,6 +1,6 @@
 // "Urgent service" — a customer (web visitor or IVR caller) asks if the
 // notary can help RIGHT NOW. We text the owner; if they reply "YES" within
-// the request's 1-minute window, every still-pending request is confirmed.
+// the request's 2-minute window, every still-pending request is confirmed.
 // Web requests are picked up by the browser polling /api/urgent-service/status;
 // IVR requests additionally get a follow-up SMS with the address, since the
 // caller already hung up by the time the owner replies.
@@ -10,7 +10,7 @@ import { sendSms } from './twilioSms';
 import { getNotaryProfile } from './notaryProfile';
 
 const COLLECTION = 'notarygarcia_urgent_requests';
-const WINDOW_MS = 60_000;
+const WINDOW_MS = 120_000;
 
 export type UrgentChannel = 'web' | 'ivr';
 export type UrgentStatus = 'pending' | 'confirmed' | 'expired';
@@ -44,7 +44,7 @@ export async function createUrgentRequest(
     : `from a phone caller${customerPhone ? ` (${customerPhone})` : ''}`;
   void sendSms(
     profile?.ownerPhone || '',
-    `URGENT SERVICE REQUEST ${source}. Reply YES within 1 minute if you can help right now.`
+    `URGENT SERVICE REQUEST ${source}. Reply YES within 2 minutes if you can help right now.`
   );
 
   return { id: ref.id, expiresAt: expiresAt.toMillis() };
@@ -73,7 +73,7 @@ export async function getUrgentRequestStatus(id: string): Promise<{
   return { status: data.status, expiresAt: data.expiresAt.toMillis() };
 }
 
-// Owner replied "YES" — confirm every request still inside its 1-minute
+// Owner replied "YES" — confirm every request still inside its 2-minute
 // window, and text IVR callers (who already hung up) the address directly.
 export async function confirmPendingUrgentRequests(): Promise<number> {
   const now = Date.now();

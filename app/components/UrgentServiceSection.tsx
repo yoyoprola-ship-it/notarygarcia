@@ -30,7 +30,7 @@ const COPY: Record<Lang, Copy> = {
   en: {
     eyebrow: 'Need it now?',
     title: 'Urgent service',
-    subtitle: "If the notary is free right now, we'll connect you within a minute.",
+    subtitle: "If the notary is free right now, we'll connect you within 2 minutes.",
     button: 'I need urgent service',
     waitingTitle: 'Asking the notary…',
     waitingBody: "We've texted the notary. Waiting for a reply —",
@@ -46,7 +46,7 @@ const COPY: Record<Lang, Copy> = {
   es: {
     eyebrow: '¿Lo necesitás ahora?',
     title: 'Servicio urgente',
-    subtitle: 'Si el notario está libre ahora mismo, te conectamos en un minuto.',
+    subtitle: 'Si el notario está libre ahora mismo, te conectamos en 2 minutos.',
     button: 'Necesito servicio urgente',
     waitingTitle: 'Consultando al notario…',
     waitingBody: 'Le enviamos un mensaje al notario. Esperando respuesta —',
@@ -61,7 +61,7 @@ const COPY: Record<Lang, Copy> = {
   },
 };
 
-const WINDOW_SECONDS = 60;
+const WINDOW_SECONDS = 120;
 const POLL_MS = 3_000;
 
 export default function UrgentServiceSection({ lang, isOpenNow }: { lang: Lang; isOpenNow: boolean }) {
