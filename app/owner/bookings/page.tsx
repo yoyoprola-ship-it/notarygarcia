@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { auth } from '@/app/lib/firebase';
 import type { Booking } from '@/app/types';
-import { formatDateShort, formatSlotRange } from '@/app/lib/timeSlots';
+import { formatDateShort, formatSlotRange, isPastSlot } from '@/app/lib/timeSlots';
 
 type FilterKey = 'upcoming' | 'confirmed' | 'cancelled' | 'all';
 
@@ -49,9 +49,8 @@ export default function OwnerBookingsPage() {
   useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filtered = useMemo(() => {
-    const now = new Date().toISOString().slice(0, 19);
     if (filter === 'upcoming') {
-      return items.filter((b) => b.status === 'confirmed' && b.slot >= now);
+      return items.filter((b) => b.status === 'confirmed' && !isPastSlot(b.slotDate, b.slotHour));
     }
     if (filter === 'confirmed') return items.filter((b) => b.status === 'confirmed');
     if (filter === 'cancelled') return items.filter((b) => b.status === 'cancelled');

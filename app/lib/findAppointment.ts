@@ -1,4 +1,5 @@
 import { adminDb } from './firebaseAdmin';
+import { isPastSlot } from './timeSlots';
 
 export interface UpcomingAppointment {
   slotDate: string;
@@ -16,10 +17,9 @@ export async function findUpcomingAppointment(callerE164: string): Promise<Upcom
     .where('customerPhone', '==', digits)
     .get();
 
-  const now = new Date().toISOString().slice(0, 19);
   const upcoming = snap.docs
     .map((d) => d.data() as { status: string; slot: string; slotDate: string; slotHour: number })
-    .filter((b) => b.status === 'confirmed' && b.slot >= now)
+    .filter((b) => b.status === 'confirmed' && !isPastSlot(b.slotDate, b.slotHour))
     .sort((a, b) => a.slot.localeCompare(b.slot));
 
   return upcoming[0] ?? null;

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/app/lib/firebaseAdmin';
 import { getClientIp, rateLimitOr429 } from '@/app/lib/rateLimit';
+import { isPastSlot } from '@/app/lib/timeSlots';
 
 interface Body { phone?: unknown }
 
@@ -26,7 +27,6 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const nowIso = new Date().toISOString().slice(0, 19);
     const snap = await adminDb
       .collection('notarygarcia_bookings')
       .where('customerPhone', '==', digits)
@@ -35,8 +35,10 @@ export async function POST(request: NextRequest) {
       .get();
 
     const hasUpcoming = snap.docs.some((d) => {
-      const slot = d.data().slot as string | undefined;
-      return slot && slot >= nowIso;
+      const data = d.data();
+      const slotDate = data.slotDate as string | undefined;
+      const slotHour = data.slotHour as number | undefined;
+      return slotDate !== undefined && slotHour !== undefined && !isPastSlot(slotDate, slotHour);
     });
 
     return NextResponse.json({ hasBookings: hasUpcoming });

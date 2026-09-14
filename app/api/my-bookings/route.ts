@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/app/lib/firebaseAdmin';
 import { getClientIp, rateLimitOr429, userRateLimitOr429 } from '@/app/lib/rateLimit';
+import { isPastSlot } from '@/app/lib/timeSlots';
 import type { Booking } from '@/app/types';
 
 export async function GET(request: NextRequest) {
@@ -38,10 +39,9 @@ export async function GET(request: NextRequest) {
       .where('status', '==', 'confirmed')
       .get();
 
-    const nowIso = new Date().toISOString().slice(0, 19);
     const bookings: Booking[] = snap.docs
       .map((d) => ({ id: d.id, ...d.data() } as Booking))
-      .filter((b) => b.slot >= nowIso)
+      .filter((b) => !isPastSlot(b.slotDate, b.slotHour))
       .sort((a, b) => a.slot.localeCompare(b.slot));
 
     return NextResponse.json({ bookings });
