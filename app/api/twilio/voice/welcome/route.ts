@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   const authToken = process.env.TWILIO_AUTH_TOKEN ?? '';
   const sig = request.headers.get('X-Twilio-Signature') ?? '';
   const url = `${BASE}/api/twilio/voice/welcome`;
-  if (authToken && sig && !validateTwilioSignature(authToken, sig, url, params)) {
+  if (!authToken || !sig || !validateTwilioSignature(authToken, sig, url, params)) {
     return new Response('Forbidden', { status: 403 });
   }
 
