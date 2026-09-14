@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Save failed' }, { status: 500 });
   }
 
-  // Fire-and-forget: email al owner + SMS de confirmación al cliente
+  // Fire-and-forget: SMS al owner + SMS de confirmación al cliente
   notifyOwnerOfBooking({
     customerName,
     customerPhone: phoneFromToken,

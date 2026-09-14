@@ -1,72 +1,29 @@
-// Notificaciones de citas: al owner por email (Resend) — antes eran SMS por
-// Twilio, pero cada SMS tiene costo por envío mientras que el email es
-// prácticamente gratis con el plan de Resend ya usado para el 2FA del admin —
-// y al cliente por SMS (sí tiene costo, pero es la confirmación que espera
-// recibir justo después de reservar).
+// Notificaciones de citas: al owner por SMS (Twilio) y al cliente también
+// por SMS. Habían pasado brevemente a email (Resend) para el owner por
+// costo, pero el owner las quiere por SMS — vuelve a Twilio para las tres.
 // notifyOwnerOfBooking  — nueva cita creada (al owner)
 // notifyOwnerOfCancellation — cita cancelada por el cliente (al owner)
+// notifyOwnerOfConsultation — nueva consulta de voz dejada por IVR (al owner)
 // notifyCustomerOfBooking — confirmación de la cita (al cliente)
 
-import { getOwnerEmail, getNotaryProfile } from './notaryProfile';
+import { getOwnerPhone, getNotaryProfile } from './notaryProfile';
 import { sendSms } from './twilioSms';
 import { formatDateEs, formatDateShort, formatHour } from './timeSlots';
 
-const BASE = process.env.SITE_URL ?? 'https://notarygarcia.notaryhost.com';
-
-function ctaButton(href: string, label: string): string {
-  return `
-    <p style="margin: 20px 0 0;">
-      <a href="${href}" style="display: inline-block; padding: 10px 20px; background: #78350f; color: #fff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 700;">${label}</a>
-    </p>
-  `;
+async function ownerE164(): Promise<string | null> {
+  const raw = await getOwnerPhone().catch(() => '');
+  const digits = raw.replace(/\D/g, '').slice(-10);
+  if (digits.length !== 10) return null;
+  return `+1${digits}`;
 }
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-async function sendOwnerEmail(subject: string, bodyHtml: string): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM || 'no-reply@notaryhost.com';
-  const to = await getOwnerEmail().catch(() => '');
-
-  if (!apiKey || !to) {
-    console.warn('[notifyOwner] Missing Resend API key or owner email — skipping notification');
+async function sendOwnerSms(body: string): Promise<void> {
+  const to = await ownerE164();
+  if (!to) {
+    console.warn('[notifyOwner] Missing/invalid owner phone — skipping SMS');
     return;
   }
-
-  const html = `
-    <div style="font-family: 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #fafaf9; color: #0f172a;">
-      <p style="color: #64748b; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 16px;">Notary Garcia</p>
-      ${bodyHtml}
-    </div>
-  `;
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 8000);
-  try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({ from, to: [to], subject, html }),
-      signal: controller.signal,
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      console.error('[notifyOwner] Resend error:', { status: res.status, err });
-      return;
-    }
-    console.log('[notifyOwner] email sent to owner');
-  } catch (err) {
-    console.error('[notifyOwner] email send failed:', err);
-  } finally {
-    clearTimeout(timer);
-  }
+  await sendSms(to, body);
 }
 
 interface BookingNotifyPayload {
@@ -79,19 +36,14 @@ interface BookingNotifyPayload {
 export async function notifyOwnerOfBooking(b: BookingNotifyPayload): Promise<void> {
   const phone = formatPhone(b.customerPhone);
   const when = formatSlot(b.slotIso);
+  // Truncamos notes para no explotar el SMS a muchos segmentos (Twilio
+  // cobra por segmento de 160 chars).
   const notesLine = b.notes && b.notes.trim().length > 0
-    ? `<p style="margin: 8px 0 0;"><strong>Needs:</strong> ${escapeHtml(b.notes.trim())}</p>`
+    ? `\nNeeds: ${b.notes.trim().slice(0, 100)}`
     : '';
 
-  await sendOwnerEmail(
-    `New appointment — ${b.customerName}`,
-    `
-      <h1 style="font-size: 18px; margin: 0 0 12px;">New appointment</h1>
-      <p style="margin: 0;"><strong>${escapeHtml(b.customerName)}</strong> · ${escapeHtml(phone)}</p>
-      <p style="margin: 4px 0 0;">${escapeHtml(when)}</p>
-      ${notesLine}
-      ${ctaButton(`${BASE}/owner/bookings`, 'View appointments')}
-    `
+  await sendOwnerSms(
+    `Notary Garcia: new appointment\n${b.customerName} · ${phone}\n${when}${notesLine}`
   );
 }
 
@@ -126,27 +78,15 @@ export async function notifyOwnerOfCancellation(b: CancellationNotifyPayload): P
   const phone = formatPhone(b.customerPhone);
   const when = formatSlot(b.slotIso);
 
-  await sendOwnerEmail(
-    `Appointment cancelled — ${b.customerName}`,
-    `
-      <h1 style="font-size: 18px; margin: 0 0 12px; color: #b91c1c;">Appointment cancelled</h1>
-      <p style="margin: 0;"><strong>${escapeHtml(b.customerName)}</strong> · ${escapeHtml(phone)}</p>
-      <p style="margin: 4px 0 0;">${escapeHtml(when)}</p>
-      ${ctaButton(`${BASE}/owner/bookings`, 'View appointments')}
-    `
+  await sendOwnerSms(
+    `Notary Garcia: appointment cancelled\n${b.customerName} · ${phone}\n${when}`
   );
 }
 
 export async function notifyOwnerOfConsultation(callerPhone: string, lang: string): Promise<void> {
   const phone = formatPhone(callerPhone);
-  await sendOwnerEmail(
-    `New voice consultation — ${phone}`,
-    `
-      <h1 style="font-size: 18px; margin: 0 0 12px;">New voice consultation</h1>
-      <p style="margin: 0;"><strong>${escapeHtml(phone)}</strong></p>
-      <p style="margin: 4px 0 0;">Language: ${escapeHtml(lang.toUpperCase())}</p>
-      ${ctaButton(`${BASE}/owner/consultations`, 'Listen to consultation')}
-    `
+  await sendOwnerSms(
+    `Notary Garcia: new voice consultation\n${phone}\nLang: ${lang.toUpperCase()}`
   );
 }
 
